@@ -10,15 +10,30 @@ import javax.servlet.http.HttpServletResponse;
 
 public class Controller extends HttpServlet {
 
+	protected String _urlPattern = "/";
+
 	protected HttpServletRequest _request;
 	protected HttpServletResponse _response;
 
 	public Controller() {
 		super();
 	}
+	
+	public Controller(String urlPattern) {
+		super();
+		this._urlPattern = urlPattern;
+	}
 
 	public void destroy() {
 		super.destroy();
+	}
+	
+	public String getUrlPattern(){
+		return this._urlPattern;
+	}
+	
+	public void setUrlPattern(String urlPattern){
+		this._urlPattern = urlPattern;
 	}
 
 	public void get(){

@@ -7,10 +7,11 @@ import juva.Controller;
 
 
 public class Index extends Controller {
-
+	
+	final static String URL_PATTERN = "/Index";
 	
 	public Index(){
-		super();
+		super(URL_PATTERN);
 	}
 	
 	public void get(){

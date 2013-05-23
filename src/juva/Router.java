@@ -5,7 +5,7 @@ import java.util.regex.*;
 
 public class Router {
 	
-	final String URI_PREFIX = "/Juva"; 
+	String URI_PREFIX = "/Juva"; 
 
     class RouterMap{
     
@@ -26,11 +26,15 @@ public class Router {
         }
     
     }
-
+    
+    public Router(String prefix){
+    	this.URI_PREFIX = prefix;
+    }
+    
     ArrayList routers = new ArrayList();
 
     public void addRouter(String urlPattern, Controller controller){
-    	RouterMap map = new RouterMap(URI_PREFIX + urlPattern, controller);
+    	RouterMap map = new RouterMap("^" + URI_PREFIX + urlPattern + "$", controller);
         routers.add(map);
     }
 
