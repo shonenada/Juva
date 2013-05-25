@@ -36,7 +36,11 @@ public class Juva extends HttpServlet {
 		ServletContext context = this.getServletContext();
 		String controllerRealPath = context.getRealPath(controllerPath);
 		File controllerClassFiles = new File(controllerRealPath);
-		scanner.scanClasses(controllerClassFiles);
+		try {
+			scanner.scanClasses(controllerClassFiles);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void setUrlPrefix(String urlPrefix){

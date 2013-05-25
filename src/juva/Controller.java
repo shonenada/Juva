@@ -36,40 +36,24 @@ public class Controller extends HttpServlet {
 		this._urlPattern = urlPattern;
 	}
 
-	public void get(){
+	public void get() throws IOException{
 		this._response.setContentType("text/html");
-		try {
-			this._response.sendError(405, "Method not allow");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		this._response.sendError(405, "Method not allow");
 	}
 
-	public void post(){
+	public void post() throws IOException{
 		this._response.setContentType("text/html");
-		try {
-			this._response.sendError(405, "Method not allow");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		this._response.sendError(405, "Method not allow");
 	}
 
-	public void put(){
+	public void put() throws IOException{
 		this._response.setContentType("text/html");
-		try {
-			this._response.sendError(405, "Method not allow");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		this._response.sendError(405, "Method not allow");
 	}
 	
-	public void delete(){
+	public void delete() throws IOException{
 		this._response.setContentType("text/html");
-		try {
-			this._response.sendError(405, "Method not allow");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		this._response.sendError(405, "Method not allow");
 	}
 
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
