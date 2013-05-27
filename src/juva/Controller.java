@@ -119,4 +119,8 @@ public class Controller extends HttpServlet {
 		this.out = this._response.getWriter();
 	}
 
+	protected void putVar(String key, Object value){
+		variables.put(key, value);
+	}
+	
 }

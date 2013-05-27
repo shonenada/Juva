@@ -1,9 +1,7 @@
 package juva;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Map;
@@ -39,20 +37,39 @@ public class Template {
 			lines = lines + line + "\n";
 			line = buffer.readLine();
 		}
-		String html = parserAll(lines);
+		String html = parse(lines);
 		return html;
 	}
 	
-	public String parserAll(String html){
+	public String parse(String html){
 		String output = "";
 		String[] lines = html.split("\n");
+		
+		Pattern ifPattren = Pattern.compile("\\{%[\\s]*?if [\\s\\S]+?\\:%\\}");
+//		Matcher ifMatcher = ifPattren.matcher(html);
+		
+		Pattern forPattern = Pattern.compile("\\{%[\\s]*?for[\\s\\S]+?\\:%\\}");
+//		Matcher forMatcher = forPattern.matcher(html);
+		
+		Pattern varPattern = Pattern.compile("\\{\\{[\\s\\S]+?\\}\\}");
+//		Matcher varMatcher = varPattern.matcher(html);
+		
 		for (int i=0;i<lines.length;i++){
-			output = output + parserLine(lines[i]) + "\n";
+			String line = lines[i];
+			Matcher ifMatcher = ifPattren.matcher(line);
+			if (ifMatcher.find()){
+				
+			}
+			output = output + parseVar(line) + "\n";
 		}
 		return output;
 	}
 	
-	public String parserLine(String input){
+	public void parseIF(String input){
+		
+	}
+	
+	public String parseVar(String input){
 		String output = input;
 		String variablePattern = "\\{\\{[\\s\\S]+?\\}\\}";
 		Pattern pattern = Pattern.compile(variablePattern);
