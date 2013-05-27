@@ -2,11 +2,14 @@ package juva;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.regex.*;
+
 
 public class Template {
 	
@@ -21,14 +24,18 @@ public class Template {
 		this.varibles.put(key, value);
 	}
 	
+	public void readFile(){
+		
+	}
+	
 	public String render() throws IOException{
 		String line = "";
 		String lines = "";
-		File htmlFile = new File(this._path);
-		FileReader reader = new FileReader(htmlFile);
+		FileInputStream stream = new FileInputStream(this._path);
+		InputStreamReader reader = new InputStreamReader(stream, "utf-8");
 		BufferedReader buffer = new BufferedReader(reader);
 		line = buffer.readLine();
-		while(line!=null){
+		while(line != null){
 			lines = lines + line + "\n";
 			line = buffer.readLine();
 		}
@@ -40,7 +47,7 @@ public class Template {
 		String output = "";
 		String[] lines = html.split("\n");
 		for (int i=0;i<lines.length;i++){
-			output = output + parserLine(lines[i]);			
+			output = output + parserLine(lines[i]) + "\n";
 		}
 		return output;
 	}
@@ -57,10 +64,24 @@ public class Template {
 			key = key.replaceAll("\\}\\}", "");
 			key = key.replaceAll(" ", "");
 			String replacement = (String) varibles.get(key);
-			output = output.replace(foundString, replacement);
+			if (replacement != null){
+				output = replaceAll(output, foundString, replacement);
+			}
+			else{
+				output = replaceAll(output, foundString, "No Key!");
+			}
 		}
 		return output;
-		
+	}
+	
+	public String replaceAll(String input, String str, String replacement){
+		String output = input;
+		String temp = output.replace(str, replacement);
+		while(temp != output){
+			output = output.replace(str, replacement);
+			temp = output.replace(str, replacement);
+		}
+		return output;
 	}
 
 }

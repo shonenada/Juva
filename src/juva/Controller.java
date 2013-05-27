@@ -14,6 +14,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import juva.Exceptions.TemplateNoVariableKey;
+
 public class Controller extends HttpServlet {
 
 	protected String _urlPattern = "/";
@@ -69,22 +71,18 @@ public class Controller extends HttpServlet {
 	}
 
 	public void get() throws IOException{
-		this._response.setContentType("text/html");
 		this._response.sendError(405, "Method not allow");
 	}
 
 	public void post() throws IOException{
-		this._response.setContentType("text/html");
 		this._response.sendError(405, "Method not allow");
 	}
 
 	public void put() throws IOException{
-		this._response.setContentType("text/html");
 		this._response.sendError(405, "Method not allow");
 	}
 	
 	public void delete() throws IOException{
-		this._response.setContentType("text/html");
 		this._response.sendError(405, "Method not allow");
 	}
 
@@ -117,6 +115,7 @@ public class Controller extends HttpServlet {
             throws IOException{
 		this._request = request;
 		this._response = response;
+		this._response.setContentType("text/html;charset=utf-8");
 		this.out = this._response.getWriter();
 	}
 

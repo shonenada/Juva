@@ -16,6 +16,7 @@ public class Juva extends HttpServlet {
 	private String PROJECT_NAME = "example";
 	private String URL_PREFIX = "/Juva";
 	private ClassScanner scanner;
+	private PrintWriter out;
 
 	protected Router routers = new Router(URL_PREFIX);
 	
@@ -43,11 +44,10 @@ public class Juva extends HttpServlet {
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		
-		PrintWriter out = response.getWriter();
+		initPrinter(response);
 		String uri = request.getRequestURI();
-		
 		Controller controller = makeController(uri);
-		
+
 		if (controller != null){
 			controller.doGet(request, response);
 		}else{
@@ -58,7 +58,8 @@ public class Juva extends HttpServlet {
 
 	public void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		
+
+		initPrinter(response);
 		String uri = request.getRequestURI();
 		Controller controller = makeController(uri);
 		
@@ -73,6 +74,7 @@ public class Juva extends HttpServlet {
 	public void doDelete(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		
+		initPrinter(response);
 		String uri = request.getRequestURI();
 		Controller controller = makeController(uri);
 		
@@ -87,6 +89,7 @@ public class Juva extends HttpServlet {
 	public void doPut(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		
+		initPrinter(response);
 		String uri = request.getRequestURI();
 		Controller controller = makeController(uri);
 		
@@ -95,7 +98,12 @@ public class Juva extends HttpServlet {
 		}else{
 			response.sendError(404, "Page Not Found!");
 		}
-		
+
+	}
+	
+	public void initPrinter(HttpServletResponse response) throws IOException{
+		response.setContentType("text/html;charset=utf-8");
+		this.out = response.getWriter();
 	}
 	
 	public Controller makeController(String uri){
