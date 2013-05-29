@@ -19,7 +19,7 @@ import juva.Exceptions.TemplateNoVariableKey;
 
 public class Controller extends HttpServlet {
 
-	protected ArrayList _urlPatterns;
+	protected ArrayList _urlPatterns = new ArrayList();
 
 	protected HttpServletRequest _request;
 	protected HttpServletResponse _response;
@@ -35,14 +35,12 @@ public class Controller extends HttpServlet {
 	
 	public Controller(String urlPattern) {
 		super();
-		this._urlPatterns = new ArrayList();
 		this.addUrlPattern(urlPattern);
 		variables.clear();
 	}
 	
 	public Controller(String[] urlPatterns) {
 		super();
-		this._urlPatterns = new ArrayList();
 		for(int i=0;i<urlPatterns.length; ++i){
 			this.addUrlPattern(urlPatterns[i]);
 		}
