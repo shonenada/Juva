@@ -10,21 +10,42 @@ import java.util.regex.*;
 
 
 public class Template {
-	
+
 	private String _path;
-	private Map<String, Object> varibles = new HashMap<String, Object>();
+	private Map<String, Object> variables = new HashMap<String, Object>();
+	
+	private final static String ifStartStr =
+		                         "\\{%[\\s]*?if [\\S]+?[\\s]*?\\:[\\s]*?%\\}";
+	private final static Pattern ifStartPattern =
+		                         Pattern.compile(ifStartStr);
+
+	private final static String ifEndStr =
+		                         "\\{%[\\s]*?endif[\\s]*?%\\}";
+	private final static Pattern ifEndPattren =
+	                             Pattern.compile(ifEndStr);
+
+	private final static String forStartStr =
+		                         "\\{%[\\s]*?for [\\S]+?[\\s]*?\\:[\\s]*?%\\}";
+	private final static Pattern forStartPattern =
+	                             Pattern.compile(forStartStr);
+
+	private final static String forEndStr =
+		                         "\\{%[\\s]*?endfor[\\s]*?%\\}";
+	private final static Pattern forEndPattern =
+        		                 Pattern.compile(forEndStr);
+	
+	private final static String varString = "\\{\\{[\\s\\S]+?\\}\\}";
+	private final static Pattern varPattern =
+	                             Pattern.compile(varString);
 	
 	public Template(String path){
 		this._path = path;
 	}
 	
 	public void putVariables(String key, Object value){
-		this.varibles.put(key, value);
+		this.variables.put(key, value);
 	}
 	
-	public void readFile(){
-		
-	}
 	
 	public String render() throws IOException{
 		String line = "";
@@ -42,31 +63,54 @@ public class Template {
 	}
 	
 	public String parse(String html){
+
 		String output = "";
 		String[] lines = html.split("\n");
-		
-		Pattern ifPattren = Pattern.compile("\\{%[\\s]*?if [\\s\\S]+?\\:%\\}");
-//		Matcher ifMatcher = ifPattren.matcher(html);
-		
-		Pattern forPattern = Pattern.compile("\\{%[\\s]*?for[\\s\\S]+?\\:%\\}");
-//		Matcher forMatcher = forPattern.matcher(html);
-		
-		Pattern varPattern = Pattern.compile("\\{\\{[\\s\\S]+?\\}\\}");
-//		Matcher varMatcher = varPattern.matcher(html);
-		
+
 		for (int i=0;i<lines.length;i++){
 			String line = lines[i];
-			Matcher ifMatcher = ifPattren.matcher(line);
-			if (ifMatcher.find()){
-				
+			Matcher ifStartMatcher = ifStartPattern.matcher(line);
+			if (ifStartMatcher.find()){
+				String ifCmd = "";
+				Matcher ifEndMatcher = ifEndPattren.matcher(line);
+				while(!ifEndMatcher.find()){
+					ifCmd += line + "\n";
+					i++;
+					line = lines[i];
+					ifEndMatcher = ifEndPattren.matcher(line);
+				}
+				ifCmd += line;
+				line = parseIF(ifCmd);
+			}else{
+				line = parseVar(line);
 			}
-			output = output + parseVar(line) + "\n";
+			output = output + line + "\n";
 		}
 		return output;
 	}
 	
-	public void parseIF(String input){
-		
+	public String parseIF(String input){
+		String output = "";
+		String condition = getCondition(input);
+		String var = (String) variables.get(condition);
+		if (var != null){
+			boolean conditionIsTrue = var.equalsIgnoreCase("True");
+			if (conditionIsTrue){
+				input = input.replaceAll(ifStartStr, "");
+				input = input.replaceAll(ifEndStr, "");
+				output = parseVar(input);
+			}
+		}
+		return output;
+	}
+	
+	public String parseFor(String input){
+		String output = "";
+		Matcher startMatcher = forStartPattern.matcher(input);
+		if (startMatcher.find()){
+			String condition = "";
+		}
+		return output;
 	}
 	
 	public String parseVar(String input){
@@ -80,25 +124,42 @@ public class Template {
 			key = key.replaceAll("\\{\\{", "");
 			key = key.replaceAll("\\}\\}", "");
 			key = key.replaceAll(" ", "");
-			String replacement = (String) varibles.get(key);
+			String replacement = (String) variables.get(key);
 			if (replacement != null){
-				output = replaceAll(output, foundString, replacement);
+				output = Utils.replaceAll(output, foundString, replacement);
 			}
 			else{
-				output = replaceAll(output, foundString, "No Key!");
+				output = Utils.replaceAll(output, foundString, "No Key!");
 			}
-		}
-		return output;
-	}
-	
-	public String replaceAll(String input, String str, String replacement){
-		String output = input;
-		String temp = output.replace(str, replacement);
-		while(temp != output){
-			output = output.replace(str, replacement);
-			temp = output.replace(str, replacement);
 		}
 		return output;
 	}
 
+	public String getCondition(String input){
+		String condition = "";
+		Matcher forMatcher = forStartPattern.matcher(input);
+		Matcher ifMatcher = ifStartPattern.matcher(input);
+		if (forMatcher.find()){
+			condition = forMatcher.group(0);
+			condition = condition.replaceAll("\\{%[\\s]*?for[\\s]*?", "");
+		}
+		else if (ifMatcher.find()){
+			condition = ifMatcher.group(0);
+			condition = condition.replaceAll("\\{%[\\s]*?if[\\s]*?", "");
+		}
+		condition = condition.replaceAll(":[\\s]*?%\\}", "");
+		condition = condition.trim();
+		return condition;
+	}
+	
+	public String removeCmd(String input){
+		String output = input;
+		output.replaceAll(ifStartStr, "");
+		output.replaceAll(ifEndStr, "");
+		output.replaceAll(forStartStr, "");
+		output.replaceAll(forEndStr, "");
+		
+		return output;
+	}
+	
 }

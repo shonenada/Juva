@@ -35,6 +35,7 @@ public class Controller extends HttpServlet {
 	public Controller(String urlPattern) {
 		super();
 		this._urlPattern = urlPattern;
+		variables.clear();
 	}
 
 	public void destroy() {
@@ -123,4 +124,11 @@ public class Controller extends HttpServlet {
 		variables.put(key, value);
 	}
 	
+	protected void putTrueVar(String key){
+		variables.put(key, "True");
+	}
+	
+	protected void putFalseVar(String key){
+		variables.put(key, "False");
+	}
 }
