@@ -2,6 +2,7 @@ package juva;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -18,7 +19,7 @@ import juva.Exceptions.TemplateNoVariableKey;
 
 public class Controller extends HttpServlet {
 
-	protected String _urlPattern = "/";
+	protected ArrayList _urlPatterns;
 
 	protected HttpServletRequest _request;
 	protected HttpServletResponse _response;
@@ -34,7 +35,17 @@ public class Controller extends HttpServlet {
 	
 	public Controller(String urlPattern) {
 		super();
-		this._urlPattern = urlPattern;
+		this._urlPatterns = new ArrayList();
+		this.addUrlPattern(urlPattern);
+		variables.clear();
+	}
+	
+	public Controller(String[] urlPatterns) {
+		super();
+		this._urlPatterns = new ArrayList();
+		for(int i=0;i<urlPatterns.length; ++i){
+			this.addUrlPattern(urlPatterns[i]);
+		}
 		variables.clear();
 	}
 
@@ -50,12 +61,12 @@ public class Controller extends HttpServlet {
 		this.rootPath = path;
 	}
 	
-	public String getUrlPattern(){
-		return this._urlPattern;
+	public ArrayList getUrlPatterns(){
+		return this._urlPatterns;
 	}
 	
-	public void setUrlPattern(String urlPattern){
-		this._urlPattern = urlPattern;
+	public void addUrlPattern(String urlPattern){
+		this._urlPatterns.add(urlPattern);
 	}
 	
 	public void render(String path) throws IOException{

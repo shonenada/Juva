@@ -3,6 +3,7 @@ package juva;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class ClassScanner {
    	
@@ -30,7 +31,11 @@ public class ClassScanner {
 		JClassLoader loader = new JClassLoader(parentLoader);
 		Class controllerClass = loader.load(path);
 		Controller controller = (Controller) controllerClass.newInstance();
-		this._juva.routers.addRouter(controller.getUrlPattern(), controller);
+		ArrayList urls = controller.getUrlPatterns();
+		for(int i=0;i<urls.size();++i){
+			String url = (String) urls.get(i);
+			this._juva.routers.addRouter(url, controller);			
+		}
 	}
 
 	class JClassLoader extends ClassLoader{

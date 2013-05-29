@@ -3,6 +3,7 @@ package juva;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -106,15 +107,30 @@ public class Juva extends HttpServlet {
 		this.out = response.getWriter();
 	}
 	
+	public Controller makeController(ArrayList uris){
+		Controller controller;
+		for (int i=0;i<uris.size(); ++i){
+			String url = (String) uris.get(i);
+			controller = makeController(url);
+			if (controller != null){
+				return controller;
+			}
+		}
+		return null;
+	}
+	
 	public Controller makeController(String uri){
-		
 		Controller controller = routers.getController(uri);
-		ServletContext context = this.getServletContext();
-		String rootPath = context.getRealPath("/");
-		controller.setContext(context);
-		controller.setPath(rootPath);
+		if (controller != null){
+			
+			ServletContext context = this.getServletContext();
+			String rootPath = context.getRealPath("/");
+			controller.setContext(context);
+			controller.setPath(rootPath);
 		
-		return controller;
+			return controller;
+		}
+		return null;
 	}
 	
 	public void scanInit(){
