@@ -14,12 +14,12 @@ import javax.servlet.http.HttpServletResponse;
 
 public class Juva extends HttpServlet {
 	
-	private String PROJECT_NAME = "example";
-	private String URL_PREFIX = "/Juva";
-	private ClassScanner scanner;
-	private PrintWriter out;
+	protected String PROJECT_NAME;
+	protected String URL_PREFIX;
+	protected ClassScanner scanner;
+	protected PrintWriter out;
 
-	protected Router routers = new Router(URL_PREFIX);
+	protected Router routers = new Router();
 	
 	public Juva(String project) {
 		super();
@@ -36,6 +36,7 @@ public class Juva extends HttpServlet {
 	
 	public void setUrlPrefix(String urlPrefix){
 		this.URL_PREFIX = urlPrefix;
+		routers.setPrefix(urlPrefix);
 	}
 	
 	public void setProjectName(String project){
@@ -127,7 +128,7 @@ public class Juva extends HttpServlet {
 			String rootPath = context.getRealPath("/");
 			controller.setContext(context);
 			controller.setPath(rootPath);
-		
+
 			return controller;
 		}
 		return null;

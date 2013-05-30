@@ -27,7 +27,11 @@ public class Router {
     
     }
     
-    public Router(String prefix){
+    public Router(){
+    	
+    }
+    
+    public void setPrefix(String prefix){
     	this.URI_PREFIX = prefix;
     }
     

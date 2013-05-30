@@ -280,12 +280,12 @@ public class Template {
 
     public String removeCmd(String input){
         String output = input;
-        
+
         output = output.replaceAll(ifStartStr, "");
         output = output.replaceAll(ifEndStr, "");
         output = output.replaceAll(forStartStr, "");
         output = output.replaceAll(forEndStr, "");
-        
+
         return output;
     }
     
