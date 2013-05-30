@@ -137,43 +137,6 @@ public class Template {
     		
     }
     
-//    public String parseSub(String html, int index){
-//    	int begin = (Integer) this.cmdsIndex.get(index);
-//    	int end = (Integer) this.cmdEndsIndex.get(begin);
-//    	String subHtml = html.substring(begin, end);
-//    	System.out.println(index + "\n" + subHtml + "\n\n");
-//    	if (index < this.cmdsIndex.size() - 1){
-//    		String replaceHtml = parseSub(html, index + 1);
-//    		int strBegin = (Integer) this.cmdsIndex.get(index);
-//    		int replaceBegin = strBegin - begin;
-//    		int replaceEnd = this.cmdEndsIndex.get(strBegin) - begin;
-//    		subHtml = replaceStrByIndex(subHtml, replaceBegin,
-//                                        replaceEnd, replaceHtml);
-//    	}
-//
-//    	String output = "";
-//    	if (index == 0){
-//    		String front = html.substring(0, begin);
-//        	output += front;
-//    	}
-//    	
-//    	if (isMatchIfStart(subHtml)){
-//    		System.out.println("if");
-//    		String embedHtml = parseIF(subHtml);
-//    		output += embedHtml;
-//    	}
-//    	if (isMatchForStart(subHtml)){
-//    		System.out.println("for");
-//    		String embedHtml = parseFor(subHtml);
-//    		output += embedHtml;
-//    	}
-//    	if (index == 0){
-//    		String rear = html.substring(end);
-//    		output += rear;
-//    	}
-//    	return output;
-//    }
-    
     public String parse(String html){
      	String output = html;
         output = parseSub(html);
