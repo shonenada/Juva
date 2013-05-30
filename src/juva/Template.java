@@ -44,9 +44,10 @@ public class Template {
     private final static Pattern varPattern =
                                  Pattern.compile(varString);
     
-    private ArrayList cmdsIndex = new ArrayList();
-    private ArrayList cmdEndsIndex = new ArrayList();
-
+    private Stack<Integer> tempIndex = new Stack<Integer>();
+    private Stack<Integer> cmdsIndex = new Stack<Integer>();
+    private Map<Integer, Integer> cmdEndsIndex =
+    	                           new HashMap<Integer, Integer>();
     
     public Template(String path){
         this._path = path;
@@ -107,90 +108,126 @@ public class Template {
     	}
     }
     
-    public String parseSub(String html, int index){
+    public String parseSub(String html){
     	
-    	int begin = (Integer) this.cmdsIndex.get(index);
-    	int end = (Integer) this.cmdEndsIndex.get(index);
+    	scanHtml(html);
+    	
+    	if (this.cmdsIndex.empty()) {
+    		return html;
+    	}
+    	
+    	int begin = this.cmdsIndex.pop();
+    	int end = this.cmdEndsIndex.get(begin);
+    	
     	String subHtml = html.substring(begin, end);
     	
-    	if (index < this.cmdsIndex.size() - 1){
-    		String replaceHtml = parseSub(html, index + 1);
-    		int replaceBegin = (Integer) this.cmdsIndex.get(index + 1) - begin;
-    		int replaceEnd = (Integer) this.cmdEndsIndex.get(index + 1) - begin;
-    		subHtml = replaceStrByIndex(subHtml, replaceBegin,
-                                        replaceEnd, replaceHtml);
-    	}
-    	
-    	String output = "";
-    	if (index == 0){
-    		String front = html.substring(0, begin);
-        	output += front;
-    	}
-    	
+    	String parsedHtml = subHtml;
     	if (isMatchIfStart(subHtml)){
-    		String embedHtml = parseIF(subHtml);
-    		output += embedHtml;
+    		parsedHtml = parseIF(parsedHtml);
     	}
     	if (isMatchForStart(subHtml)){
-    		System.out.println("FOR");
-    		String embedHtml = parseFor(subHtml);
-    		output += embedHtml;
+    		parsedHtml = parseFor(parsedHtml);
     	}
-    	if (index == 0){
-    		String rear = html.substring(end);
-    		output += rear;
-    	}
-    	return output;
+    	
+    	html = replaceStrByIndex(html, begin, end, parsedHtml);
+    	
+    	html = parseSub(html);
+    	
+    	return html;
+    		
     }
     
+//    public String parseSub(String html, int index){
+//    	int begin = (Integer) this.cmdsIndex.get(index);
+//    	int end = (Integer) this.cmdEndsIndex.get(begin);
+//    	String subHtml = html.substring(begin, end);
+//    	System.out.println(index + "\n" + subHtml + "\n\n");
+//    	if (index < this.cmdsIndex.size() - 1){
+//    		String replaceHtml = parseSub(html, index + 1);
+//    		int strBegin = (Integer) this.cmdsIndex.get(index);
+//    		int replaceBegin = strBegin - begin;
+//    		int replaceEnd = this.cmdEndsIndex.get(strBegin) - begin;
+//    		subHtml = replaceStrByIndex(subHtml, replaceBegin,
+//                                        replaceEnd, replaceHtml);
+//    	}
+//
+//    	String output = "";
+//    	if (index == 0){
+//    		String front = html.substring(0, begin);
+//        	output += front;
+//    	}
+//    	
+//    	if (isMatchIfStart(subHtml)){
+//    		System.out.println("if");
+//    		String embedHtml = parseIF(subHtml);
+//    		output += embedHtml;
+//    	}
+//    	if (isMatchForStart(subHtml)){
+//    		System.out.println("for");
+//    		String embedHtml = parseFor(subHtml);
+//    		output += embedHtml;
+//    	}
+//    	if (index == 0){
+//    		String rear = html.substring(end);
+//    		output += rear;
+//    	}
+//    	return output;
+//    }
+    
     public String parse(String html){
-    	scanHtml(html);
-    	int size = this.cmdEndsIndex.size();
-    	String output = html;
-    	if (size > 0){
-        	int index = 0;
-          	output = parseSub(html, index);
-    	}else{
-    		output = parseVar(output);
-    	}
+     	String output = html;
+        output = parseSub(html);
+    	output = parseVar(output);
+
     	return output;
     }
     
     public void scanHtml(String html){
-    	Matcher ifStartMatcher = ifStartPattern.matcher(html);
-    	while (ifStartMatcher.find()){
-    		String cmd = ifStartMatcher.group(0);
-    		int index = html.indexOf(cmd);
-    		this.cmdsIndex.add(index);
-    		html = replaceSubStrWithBlank(html, cmd);
+    	this.cmdsIndex.clear();
+    	this.cmdEndsIndex.clear();
+    	String[] lines = html.split("\n");
+    	
+    	for (int i=0;i<lines.length; ++i){
+    		
+    		String line = lines[i];
+    		
+	    	Matcher ifStartMatcher = ifStartPattern.matcher(line);
+	    	if (ifStartMatcher.find()){
+	    		String cmd = ifStartMatcher.group(0);
+	    		int index = html.indexOf(cmd);
+	    		this.cmdsIndex.push(index);
+	    		this.tempIndex.push(index);
+	    		html = replaceSubStrWithBlank(html, cmd);
+	    	}
+
+	    	Matcher ifEndMatcher = ifEndPattern.matcher(line);
+	    	if (ifEndMatcher.find()){
+	    		String cmd = ifEndMatcher.group(0);
+	    		int index = html.indexOf(cmd) + cmd.length();
+	    		int lastcmdPair = this.tempIndex.pop();
+	    		this.cmdEndsIndex.put(lastcmdPair, index);
+	    		html = replaceSubStrWithBlank(html, cmd);
+	    	}
+	    	
+	    	Matcher forStartMatcher = forStartPattern.matcher(line);
+	    	if (forStartMatcher.find()){
+	    		String cmd = forStartMatcher.group(0);
+	    		int index = html.indexOf(cmd);
+	    		this.cmdsIndex.push(index);
+	    		this.tempIndex.push(index);
+	    		html = replaceSubStrWithBlank(html, cmd);
+	    	}
+	    	
+	    	Matcher forEndMatcher = forEndPattern.matcher(line);
+	    	if (forEndMatcher.find()){
+	    		String cmd = forEndMatcher.group(0);
+	    		int index = html.indexOf(cmd) + cmd.length();
+	    		int lastcmdPair = this.tempIndex.pop();
+	    		this.cmdEndsIndex.put(lastcmdPair, index);
+	    		html = replaceSubStrWithBlank(html, cmd);
+	    	}
     	}
     	
-    	Matcher forStartMatcher = forStartPattern.matcher(html);
-    	while (forStartMatcher.find()){
-    		String cmd = forStartMatcher.group(0);
-    		int index = html.indexOf(cmd);
-    		this.cmdsIndex.add(index);
-    		html = replaceSubStrWithBlank(html, cmd);
-    	}
-    	
-    	Matcher ifEndMatcher = ifEndPattern.matcher(html);
-    	while (ifEndMatcher.find()){
-    		String cmd = ifEndMatcher.group(0);
-    		int index = html.indexOf(cmd) + cmd.length();
-    		this.cmdEndsIndex.add(index);
-    		html = replaceSubStrWithBlank(html, cmd);
-    	}
-    	
-    	Matcher forEndMatcher = forEndPattern.matcher(html);
-    	while (forEndMatcher.find()){
-    		String cmd = forEndMatcher.group(0);
-    		int index = html.indexOf(cmd) + cmd.length();
-    		this.cmdEndsIndex.add(index);
-    		html = replaceSubStrWithBlank(html, cmd);
-    	}
-    	Collections.sort(this.cmdsIndex);
-    	Collections.sort(this.cmdEndsIndex);
-    	Collections.reverse(this.cmdEndsIndex);
     }
 
     public String parseIF(String input){
