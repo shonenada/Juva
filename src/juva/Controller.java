@@ -80,48 +80,76 @@ public class Controller extends HttpServlet {
 		out.print(html);
 	}
 
-	public void get() throws IOException{
+	public void get() throws Throwable{
 		this._response.sendError(405, "Method not allow");
 	}
 
-	public void post() throws IOException{
+	public void post() throws Throwable{
 		this._response.sendError(405, "Method not allow");
 	}
 
-	public void put() throws IOException{
+	public void put() throws Throwable{
 		this._response.sendError(405, "Method not allow");
 	}
 	
-	public void delete() throws IOException{
+	public void delete() throws Throwable{
 		this._response.sendError(405, "Method not allow");
 	}
 
-	public void doGet(HttpServletRequest request, HttpServletResponse response)
+	public void doGet(HttpServletRequest request,
+			           HttpServletResponse response)
 			throws ServletException, IOException {
 		initActinon(request, response);
-		this.get();
+		try {
+			this.get();
+		} catch (Throwable e) {
+			// TODO log this message.
+			response.sendError(500);
+			System.out.println(e.getMessage());
+		}
 	}
 
-	public void doPost(HttpServletRequest request, HttpServletResponse response)
+	public void doPost(HttpServletRequest request,
+			            HttpServletResponse response)
 			throws ServletException, IOException {
 		initActinon(request, response);
-		this.post();
+		try {
+			this.post();
+		} catch (Throwable e) {
+			// TODO log this message.
+			response.sendError(500);
+			System.out.println(e.getMessage());
+		}
 	}
 
-	public void doPut(HttpServletRequest request, HttpServletResponse response)
+	public void doPut(HttpServletRequest request,
+			           HttpServletResponse response)
 			throws ServletException, IOException {
 		initActinon(request, response);
-		this.put();
+		try {
+			this.put();
+		} catch (Throwable e) {
+			// TODO log this message.
+			response.sendError(500);
+			System.out.println(e.getMessage());
+		}
 	}
 
-	public void doDelete(HttpServletRequest request, HttpServletResponse response)
+	public void doDelete(HttpServletRequest request,
+			              HttpServletResponse response)
 			throws ServletException, IOException {
 		initActinon(request, response);
-		this.delete();
+		try {
+			this.delete();
+		} catch (Throwable e) {
+			// TODO log this message.
+			response.sendError(500);
+			System.out.println(e.getMessage());
+		}
 	}
 	
 	public void initActinon(HttpServletRequest request,
-			                HttpServletResponse response)
+			                 HttpServletResponse response)
             throws IOException{
 		this._request = request;
 		this._response = response;
