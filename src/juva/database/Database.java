@@ -195,26 +195,34 @@ public class Database {
 		String primaryValue = model.getValue(primaryKey);
 		ArrayList columns = model.getColumnList();
 		
-		
-		
 		for (int i=0;i<columns.size();++i){
 			Column currentColumn = (Column) columns.get(i);
 			String columnName = currentColumn.getName();
-			updateSql = updateSql + columnName + "= ?, "; 
-			String currentValue = model.getValue(currentColumn);
-			preparedStatement.setString(i+1, currentValue);
+			if (primaryKey == columnName){
+				continue;
+			}
+			updateSql = updateSql + columnName + "= ?, ";
 		}
 		
-		updateSql = updateSql + " WHERE " + primaryKey + "= ?";
+		updateSql = removeComma(updateSql);
+		updateSql = updateSql + " WHERE " + primaryKey + " = ?";
 		
 		preparedStatement = connection.prepareStatement(updateSql);
 		preparedStatement.clearParameters();
 		
+		int j = 0;
 		for (int i=0;i<columns.size();++i){
 			Column currentColumn = (Column) columns.get(i);
+			String columnName = currentColumn.getName();
+			if (primaryKey == columnName){
+				continue;
+			}
 			String currentValue = model.getValue(currentColumn);
-			preparedStatement.setString(i+1, currentValue);
+			preparedStatement.setString(j+1, currentValue);
+			j = j + 1;
 		}
+		
+		preparedStatement.setString(j+1, primaryValue);
 		
 		preparedStatement.setString(columns.size(), primaryValue);
 		preparedStatement.executeUpdate();
@@ -227,6 +235,15 @@ public class Database {
 			selectFilter.put(columnName, columnValue);
 		}		
 	}
+	
+	 public ResultSet select() throws SQLException{
+		 ArrayList list = this.model.getColumnList();
+		 Column[] all = new Column[list.size()];
+		 for (int i=0;i<list.size(); ++i){
+			 all[i] = (Column) list.get(i);
+		 }
+		 return this.select(all);
+	 }
 
 	public ResultSet select(Column[] columns) throws SQLException{
 		
@@ -243,11 +260,12 @@ public class Database {
 		Iterator iterator = columnNames.iterator();
 		while (iterator.hasNext()){
 			String columnName = (String) iterator.next();
-			selectSql = selectSql + columnName + " = ?, ";
+			selectSql = selectSql + columnName + " = ? AND ";
 		}
-		selectSql = removeComma(selectSql);
 		
-		preparedStatement = connection.prepareStatement(selectSql);
+		selectSql = removeAndCmd(selectSql);
+		
+    	preparedStatement = connection.prepareStatement(selectSql);
 		preparedStatement.clearParameters();
 
 		int i = 1;
@@ -271,6 +289,20 @@ public class Database {
 			input = input.substring(0, input.length() - 2);
 		}
 		return input;
+	}
+	
+	private String removeAndCmd(String input){
+		if (input.endsWith("AND")){
+			input = input.substring(0, input.length() - 3);
+		}
+		if (input.endsWith("AND ")){
+			input = input.substring(0, input.length() - 4);
+		}
+		return input;
+	}
+	
+	public void clearSelectFilter(){
+		this.selectFilter.clear();
 	}
 	
 }

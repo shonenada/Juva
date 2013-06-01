@@ -1,5 +1,6 @@
 package juva.database;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,14 +17,38 @@ public class Model {
 	protected Database db;
 
 	ArrayList columns = new ArrayList();
+	Map<String, String> _info = new HashMap<String, String>();
 	Map<Column, String> data = new HashMap<Column, String>();
 	
 	public Model(String table, Map<String, String> info)
 	    throws ClassNotFoundException, SQLException {
 		this._table = table;
+		this._info = info;
 		this.db = new Database(this);
 		this.db.setInfo(info);
 		this.db.connect();
+	}
+	
+	public Model get(String id)
+	    throws SQLException, ClassNotFoundException,
+	            InstantiationException, IllegalAccessException{
+		Model output = this.getClass().newInstance();
+		output._table = this._table;
+		output._info = this._info;
+		output.columns = this.columns;
+		output.db.addSelectFilter("id", id);
+		ArrayList columns = output.getColumnList();
+		ResultSet first = output.db.select();
+		if (first.next()){
+			for (int i=0;i<columns.size();++i){
+				Column column = (Column )columns.get(i);
+				String columnName = column.getName();
+				String columnValue = first.getString(columnName);
+				output.setValue(columnName, columnValue);
+			}
+		}
+		output.db.clearSelectFilter();
+		return output;
 	}
 
 	public String getTable(){
@@ -42,7 +67,7 @@ public class Model {
 		for(int i=0;i<this.columns.size();++i){
 			Column currentColumn = (Column) this.columns.get(i);
 			String columnName = currentColumn.getName();
-			if (name == columnName){
+			if (name.equals(columnName)){
 				return currentColumn;
 			}
 		}
@@ -80,8 +105,7 @@ public class Model {
 	
 	public void setValue(Column column, String value){
 		boolean columnExist = this.isColumExsit(column);
-		boolean columnSet = this.isColumnSet(column);
-		if (columnExist && !columnSet){
+		if (columnExist){
 			data.put(column, value);
 		}
 	}
