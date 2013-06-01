@@ -8,6 +8,9 @@ public class Column {
 	private int _length;
 	private String _defaultValue;
 	
+	public Column(String name, String type, String val, int length){
+		this(name, type, val, length, false);
+	}
 	
 	public Column(String name, String type, String val, int length,
                    boolean isPKey){

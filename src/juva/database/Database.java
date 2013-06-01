@@ -18,7 +18,7 @@ import juva.Exceptions.NotValidDatabaseInformationException;
 public class Database {
 	
 	class Argument{
-		
+
 		private String _name;
 		private String _value;
 		
@@ -26,15 +26,15 @@ public class Database {
 			this._name = name;
 			this._value = value;
 		}
-		
+
 		public String getName(){
 			return this._name;
 		}
-		
+
 		public String getValue(){
 			return this._value;
 		}
-		
+
 	}
 
 	private Model model;
@@ -82,13 +82,22 @@ public class Database {
 		this._passwd = passwd;
 	}
 
+	public void setInfo(Map<String, String> info){
+		this.setType(info.get("type"));
+		this.setHost(info.get("host"));
+		this.setPort(info.get("port"));
+		this.setName(info.get("name"));
+		this.setUser(info.get("user"));
+		this.setPasswd(info.get("passwd"));
+	}
+
 	public void addArgument(String argName, String value){
 		Argument argument = new Argument(argName, value);
 		this._arguments.add(argument);
 	}
 
 	public void connect()
-	    throws SQLException, NotValidDatabaseInformationException{
+	    throws SQLException{
 		
 		boolean isValid = this.valid();
 		if (isValid){
@@ -110,9 +119,6 @@ public class Database {
 			}
 			connection = DriverManager.getConnection(jdbc, _user, _passwd);
 			statement = connection.createStatement();
-		}
-		else{
-			throw new NotValidDatabaseInformationException();
 		}
 	}
 	
@@ -153,15 +159,13 @@ public class Database {
 		String valueSectionSql = "VALUES(";
 		ArrayList columns = model.getColumnList();
 		
-		preparedStatement.clearParameters();
+		
 		
 		for (int i=0;i<columns.size();++i){
 			Column currentColumn = (Column) columns.get(i);
 			String columnName = currentColumn.getName();
 			columnsSectionSql = (columnsSectionSql + columnName + ", ");
 			valueSectionSql = valueSectionSql + " ?, ";
-			String currentValue = model.getValue(currentColumn);
-			preparedStatement.setString(i+1, currentValue);
 		}
 		
 		columnsSectionSql = removeComma(columnsSectionSql);
@@ -172,6 +176,14 @@ public class Database {
 		insertSql = insertSql + columnsSectionSql + valueSectionSql;
 		
 		preparedStatement = connection.prepareStatement(insertSql);
+		preparedStatement.clearParameters();
+		
+		for(int i=0;i<columns.size();++i){
+			Column currentColumn = (Column) columns.get(i);
+			String currentValue = model.getValue(currentColumn);
+			preparedStatement.setString(i+1, currentValue);
+		}
+		
 		preparedStatement.executeUpdate();
 	
 	}
@@ -183,7 +195,7 @@ public class Database {
 		String primaryValue = model.getValue(primaryKey);
 		ArrayList columns = model.getColumnList();
 		
-		preparedStatement.clearParameters();
+		
 		
 		for (int i=0;i<columns.size();++i){
 			Column currentColumn = (Column) columns.get(i);
@@ -196,6 +208,14 @@ public class Database {
 		updateSql = updateSql + " WHERE " + primaryKey + "= ?";
 		
 		preparedStatement = connection.prepareStatement(updateSql);
+		preparedStatement.clearParameters();
+		
+		for (int i=0;i<columns.size();++i){
+			Column currentColumn = (Column) columns.get(i);
+			String currentValue = model.getValue(currentColumn);
+			preparedStatement.setString(i+1, currentValue);
+		}
+		
 		preparedStatement.setString(columns.size(), primaryValue);
 		preparedStatement.executeUpdate();
 
@@ -208,30 +228,37 @@ public class Database {
 		}		
 	}
 
-	public ResultSet select(ArrayList columns) throws SQLException{
+	public ResultSet select(Column[] columns) throws SQLException{
 		
 		String table = model.getTable();
 		String selectSql = "SELECT ";
-		for (int i=0; i<columns.size(); ++i){
-			Column column = (Column) columns.get(i);
+		for (int i=0; i<columns.length; ++i){
+			Column column = columns[i];
 			selectSql = selectSql + column.getName() + ", ";
 		}
 		selectSql = removeComma(selectSql);
-		selectSql = selectSql + " FROM " + table + " ";
+		selectSql = selectSql + " FROM " + table + " WHERE ";
 		
-		int i = 1;
-		preparedStatement.clearParameters();
 		Set<String> columnNames = selectFilter.keySet();
 		Iterator iterator = columnNames.iterator();
 		while (iterator.hasNext()){
-			Column currentColumn = (Column) iterator.next();
-			String columnName = currentColumn.getName();
-			String currentValue = model.getValue(currentColumn);
-			selectSql = selectSql + columnName + "= ?, ";
+			String columnName = (String) iterator.next();
+			selectSql = selectSql + columnName + " = ?, ";
+		}
+		selectSql = removeComma(selectSql);
+		
+		preparedStatement = connection.prepareStatement(selectSql);
+		preparedStatement.clearParameters();
+
+		int i = 1;
+		iterator = columnNames.iterator();
+		while (iterator.hasNext()){
+			String columnName = (String) iterator.next();
+			String currentValue = selectFilter.get(columnName);
 			preparedStatement.setString(i, currentValue);
 			i = i + 1;
 		}
-		selectSql = removeComma(selectSql);
+		
 		ResultSet rs = preparedStatement.executeQuery();
 		return rs;
 	}

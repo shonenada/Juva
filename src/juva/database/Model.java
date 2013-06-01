@@ -1,33 +1,43 @@
 package juva.database;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import juva.Exceptions.NotValidDatabaseInformationException;
+
 
 public class Model {
 	
-	private String _table;
-	private Database database;
+	protected String _table;
+	protected Database db;
+
 	ArrayList columns = new ArrayList();
 	Map<Column, String> data = new HashMap<Column, String>();
-
-	public Model(String table) throws ClassNotFoundException {
-		this._table = table;
-		this.database = new Database(this);
-	}
 	
+	public Model(String table, Map<String, String> info)
+	    throws ClassNotFoundException, SQLException {
+		this._table = table;
+		this.db = new Database(this);
+		this.db.setInfo(info);
+		this.db.connect();
+	}
+
 	public String getTable(){
 		return this._table;
+	}
+
+	public Database getDb(){
+		return db;
 	}
 	
 	public Map<Column, String> getData(){
 		return data;
 	}
-	
+
 	public Column getColumn(String name){
 		for(int i=0;i<this.columns.size();++i){
 			Column currentColumn = (Column) this.columns.get(i);
@@ -38,7 +48,7 @@ public class Model {
 		}
 		return null;
 	}
-	
+
 	public String getPrimaryKey(){
 		for(int i=0;i<this.columns.size();++i){
 			Column currentColumn = (Column) this.columns.get(i);
@@ -55,6 +65,12 @@ public class Model {
 		return this.columns;
 	}
 	
+	public void addColumns(Column[] columns){
+		for (int i=0;i<columns.length;++i){
+			this.addColumn(columns[i]);
+		}
+	}
+	
 	public void addColumn(Column column){
 		boolean columnNotExist = (!this.isColumExsit(column));
 		if (columnNotExist){
@@ -65,8 +81,15 @@ public class Model {
 	public void setValue(Column column, String value){
 		boolean columnExist = this.isColumExsit(column);
 		boolean columnSet = this.isColumnSet(column);
-		if (columnExist && columnSet){
+		if (columnExist && !columnSet){
 			data.put(column, value);
+		}
+	}
+	
+	public void setValue(String columnName, String value){
+		Column column = this.getColumn(columnName);
+		if (column != null){
+			this.setValue(column, value);
 		}
 	}
 	
@@ -100,10 +123,6 @@ public class Model {
 	        }
 	    }
 	    return false;
-	}
-	
-	public void save(){
-		
 	}
 
 }
