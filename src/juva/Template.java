@@ -6,15 +6,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Queue;
 import java.util.Stack;
 import java.util.regex.*;
+
+import juva.database.Model;
 
 
 public class Template {
@@ -219,17 +216,18 @@ public class Template {
         String[] conditions = condition.split("[\\s]+?in[\\s]+?");
         String singleName = conditions[0];
         String setName = conditions[1];
-        Object[] varSet = (Object[]) variables.get(setName);
-        if (varSet != null && varSet.length > 0){
-        	if (varSet[0] instanceof String){
+        Object varSet = variables.get(setName);
+        if (varSet != null){
+        	if (varSet instanceof String[]){
         		System.out.println("String");
         		String[] vars = (String[]) varSet;
         		output = processString(input, vars, singleName);
         	}
-        	if (varSet[0] instanceof ResultSet){
-        		ResultSet rs = (ResultSet) varSet[0];
+        	if (varSet instanceof ResultSet){
+        		ResultSet rs = (ResultSet) varSet;
         		output = processResultSet(input, rs);
         	}
+
         }
         output = removeCmd(output);
         return output;
@@ -275,17 +273,39 @@ public class Template {
         Matcher matcher = varPattern.matcher(input);
         while(matcher.find()){
             String foundString = matcher.group(0);
-            String key = foundString;
-            key = removeEtbrackets(key);
-            String replacement = (String) variables.get(key);
-            if (replacement != null){
+            String key = getKey(foundString);
+            Object var = variables.get(key);
+            if (var instanceof String){
+            	String replacement = (String) var;
                 output = Utils.replaceAll(output, foundString, replacement);
             }
+            else if (var instanceof Model){
+            	Model model = (Model) var;
+            	output = processModel(output, foundString, model);
+            }
             else{
-                output = Utils.replaceAll(output, foundString, "No Key!");
+            	output = Utils.replaceAll(output, foundString, "No Key!");
             }
         }
         return output;
+    }
+
+    public String processModel(String input, String foundString, Model model){
+    	String[] temp = removeEtbrackets(foundString).split("\\.");
+    	if (temp.length < 2){
+    		String output = temp[0].toString();
+    		return output;
+    	}
+    	String key = temp[1];
+    	String output = input;
+    	String value = model.getValue(key);
+    	if (value != null){
+    		output = Utils.replaceAll(output, foundString, value);
+    	}
+    	else{
+    		output = "No Key!";
+    	}
+    	return output;
     }
 
     // TODO: Combine getXXXCondition methods.
@@ -329,7 +349,8 @@ public class Template {
     	
     	output = output.replaceAll("\\{\\{[\\s]*?", "");
     	output = output.replaceAll("\\}\\}[\\s]*?", "");
-    	
+    	output = output.trim();
+
     	return output;
     }
     
@@ -350,6 +371,18 @@ public class Template {
     	String rear = input.substring(end);
     	String output = front + replacement + rear;
     	return output;    	
+    }
+    
+    public String getKey(String input){
+    	String key = null;
+    	String[] temp = removeEtbrackets(input).split("\\.");
+        if (temp.length > 0){
+        	key = temp[0];
+        }
+        else{
+        	key = input;
+        }
+        return key;
     }
     
 }

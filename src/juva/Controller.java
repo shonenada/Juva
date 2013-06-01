@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import juva.Exceptions.TemplateNoVariableKey;
+import juva.database.Model;
 
 public class Controller extends HttpServlet {
 
@@ -163,9 +164,8 @@ public class Controller extends HttpServlet {
 		variables.put(key, value);
 	}
 	
-	protected void putRs(String key, ResultSet rs){
-		ResultSet[] listOfSet = {rs};
-		putVar("rs", listOfSet);
+	protected void putModel(String key, Model model){
+		variables.put(key, model);
 	}
 	
 	protected void putTrueVar(String key){
