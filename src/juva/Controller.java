@@ -2,6 +2,8 @@ package juva;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -67,7 +69,7 @@ public class Controller extends HttpServlet {
 		this._urlPatterns.add(urlPattern);
 	}
 	
-	public void render(String path) throws IOException{
+	public void render(String path) throws IOException, SQLException{
 		Template template = new Template(rootPath + "/templates/" + path);
 		Set<String> keys = variables.keySet();
 		Iterator iterator = keys.iterator();
@@ -105,7 +107,7 @@ public class Controller extends HttpServlet {
 		} catch (Throwable e) {
 			// TODO log this message.
 			response.sendError(500);
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
@@ -118,7 +120,7 @@ public class Controller extends HttpServlet {
 		} catch (Throwable e) {
 			// TODO log this message.
 			response.sendError(500);
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
@@ -131,7 +133,7 @@ public class Controller extends HttpServlet {
 		} catch (Throwable e) {
 			// TODO log this message.
 			response.sendError(500);
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
@@ -144,7 +146,7 @@ public class Controller extends HttpServlet {
 		} catch (Throwable e) {
 			// TODO log this message.
 			response.sendError(500);
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 	
@@ -159,6 +161,11 @@ public class Controller extends HttpServlet {
 
 	protected void putVar(String key, Object value){
 		variables.put(key, value);
+	}
+	
+	protected void putRs(String key, ResultSet rs){
+		ResultSet[] listOfSet = {rs};
+		putVar("rs", listOfSet);
 	}
 	
 	protected void putTrueVar(String key){

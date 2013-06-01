@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -44,6 +46,10 @@ public class Template {
     private final static Pattern varPattern =
                                  Pattern.compile(varString);
     
+    private final static String paramString = "[\\S]+?\\.[\\S]+?";
+    private final static Pattern paramPattern =
+                                 Pattern.compile(paramString);
+    
     private Stack<Integer> tempIndex = new Stack<Integer>();
     private Stack<Integer> cmdsIndex = new Stack<Integer>();
     private Map<Integer, Integer> cmdEndsIndex =
@@ -57,7 +63,7 @@ public class Template {
         this.variables.put(key, value);
     }
     
-    public String render() throws IOException{
+    public String render() throws IOException, SQLException{
         String line = "";
         String lines = "";
         FileInputStream stream = new FileInputStream(this._path);
@@ -108,7 +114,7 @@ public class Template {
     	}
     }
     
-    public String parseSub(String html){
+    public String parseSub(String html) throws SQLException{
     	
     	scanHtml(html);
     	
@@ -137,7 +143,7 @@ public class Template {
     		
     }
     
-    public String parse(String html){
+    public String parse(String html) throws SQLException{
      	String output = html;
         output = parseSub(html);
     	output = parseVar(output);
@@ -207,41 +213,70 @@ public class Template {
         return output;
     }
 
-    public String parseFor(String input){
+    public String parseFor(String input) throws SQLException{
         String output = "";
         String condition = getForCondition(input);
         String[] conditions = condition.split("[\\s]+?in[\\s]+?");
         String singleName = conditions[0];
         String setName = conditions[1];
         Object[] varSet = (Object[]) variables.get(setName);
-        if (varSet != null){
-        	String[] lines = input.split("\n");
-        	for (int i=0;i<varSet.length; ++i){
-        		for (int j=0; j<lines.length; ++j){
-        			String line = lines[j];
-        			variables.put(singleName, varSet[i]);
-        		 	line = parseVar(line);
-        		 	output += line;
-        		}
+        if (varSet != null && varSet.length > 0){
+        	if (varSet[0] instanceof String){
+        		System.out.println("String");
+        		String[] vars = (String[]) varSet;
+        		output = processString(input, vars, singleName);
+        	}
+        	if (varSet[0] instanceof ResultSet){
+        		ResultSet rs = (ResultSet) varSet[0];
+        		output = processResultSet(input, rs);
         	}
         }
-
         output = removeCmd(output);
-
         return output;
     }
+    
+    public String processString(String input, String[] varSet, String varName){
+    	String output = "";
+    	String[] lines = input.split("\n");
+    	for (int i=0;i<varSet.length; ++i){
+    		for (int j=0; j<lines.length; ++j){
+    			String line = lines[j];
+    			variables.put(varName, varSet[i]);
+    		 	line = parseVar(line);
+    		 	output += line;
+    		}
+    	}
+    	return output;
+    }
 
+    public String processResultSet(String input, ResultSet rs)
+            throws SQLException{
+    	String output = input;
+    	String[] lines = input.split("\n");
+		while (rs.next()){
+			for (int i=0;i<lines.length;++i){
+    			String line = lines[i];
+    			Matcher matcher = varPattern.matcher(line);
+    			while(matcher.find()){
+    	            String foundString =
+                               matcher.group(0);
+    	            String[] names = removeEtbrackets(foundString).split("\\.");
+    	            String varName = names[1];
+    	            String replacement = rs.getString(varName);
+   	                output = Utils.replaceAll(output, foundString, replacement);
+    	        }
+    		}
+		}
+		return output;
+    }
+    
     public String parseVar(String input){
         String output = input;
-        String variablePattern = "\\{\\{[\\s\\S]+?\\}\\}";
-        Pattern pattern = Pattern.compile(variablePattern);
-        Matcher matcher = pattern.matcher(input);
+        Matcher matcher = varPattern.matcher(input);
         while(matcher.find()){
             String foundString = matcher.group(0);
             String key = foundString;
-            key = key.replaceAll("\\{\\{", "");
-            key = key.replaceAll("\\}\\}", "");
-            key = key.replaceAll(" ", "");
+            key = removeEtbrackets(key);
             String replacement = (String) variables.get(key);
             if (replacement != null){
                 output = Utils.replaceAll(output, foundString, replacement);
@@ -287,6 +322,15 @@ public class Template {
         output = output.replaceAll(forEndStr, "");
 
         return output;
+    }
+    
+    public String removeEtbrackets(String input){
+    	String output = input;
+    	
+    	output = output.replaceAll("\\{\\{[\\s]*?", "");
+    	output = output.replaceAll("\\}\\}[\\s]*?", "");
+    	
+    	return output;
     }
     
     public String replaceSubStrWithBlank(String input, String subStr){
