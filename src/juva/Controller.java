@@ -2,7 +2,6 @@ package juva;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,6 +15,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import juva.Exceptions.TemplateNoVariableKey;
 import juva.database.Model;
@@ -24,12 +24,13 @@ public class Controller extends HttpServlet {
 
 	protected ArrayList _urlPatterns = new ArrayList();
 
-	protected HttpServletRequest _request;
-	protected HttpServletResponse _response;
+	protected HttpServletRequest request;
+	protected HttpServletResponse response;
 	protected PrintWriter out;
 	protected ServletOutputStream outputStream;
 	protected ServletContext context;
 	protected String rootPath;
+	protected HttpSession session;
 	protected Map<String, Object> variables = new HashMap<String, Object>(); 
 
 	public Controller() {
@@ -84,19 +85,19 @@ public class Controller extends HttpServlet {
 	}
 
 	public void get() throws Throwable{
-		this._response.sendError(405, "Method not allow");
+		this.response.sendError(405, "Method not allow");
 	}
 
 	public void post() throws Throwable{
-		this._response.sendError(405, "Method not allow");
+		this.response.sendError(405, "Method not allow");
 	}
 
 	public void put() throws Throwable{
-		this._response.sendError(405, "Method not allow");
+		this.response.sendError(405, "Method not allow");
 	}
 	
 	public void delete() throws Throwable{
-		this._response.sendError(405, "Method not allow");
+		this.response.sendError(405, "Method not allow");
 	}
 
 	public void doGet(HttpServletRequest request,
@@ -154,10 +155,13 @@ public class Controller extends HttpServlet {
 	public void initActinon(HttpServletRequest request,
 			                 HttpServletResponse response)
             throws IOException{
-		this._request = request;
-		this._response = response;
-		this._response.setContentType("text/html;charset=utf-8");
-		this.out = this._response.getWriter();
+		this.request = request;
+		this.response = response;
+		this.response.setContentType("text/html;charset=utf-8");
+		this.setContext(context);
+		session = request.getSession(true);
+		this.out = this.response.getWriter();
+		Utils.Json.registerPrinter(out);
 	}
 
 	protected void putVar(String key, Object value){
