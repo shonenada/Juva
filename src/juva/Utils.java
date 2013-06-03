@@ -4,13 +4,20 @@ import java.security.*;
 import java.math.*;
 import java.text.*;
 import java.util.*;
+import java.io.PrintWriter;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 public class Utils {
-	
+
 	public static class Json{
+		
+		public static PrintWriter printer;
+		
+		public static void registerPrinter(PrintWriter printer){
+			Utils.Json.printer = printer;
+		}
 		
 		public static JSONArray StringToJson(String str){
 			JSONArray output = JSONArray.fromObject(str);
@@ -59,6 +66,43 @@ public class Utils {
 			return JsonToList(json);
 		}
 		
+		public static JSONObject encode(String arg1, String arg2){
+			Map<String, String> map = new HashMap<String, String>();
+			map.put("success", arg1);
+			map.put("message", arg2);
+			return encode(map);
+		}
+		
+		public static void json(String str){
+			if (printer != null){
+				printer.println(encode(str));				
+			}
+		}
+		
+		public static void json(Object[] array){
+			if (printer != null){
+				printer.println(encode(array));
+			}
+		}
+		
+		public static void json(List list){
+			if (printer != null){
+				printer.println(encode(list));
+			}
+		}
+		
+		public static void json(Map map){
+			if (printer != null){
+				printer.println(encode(map));
+			}
+		}
+		
+		public static void json(String arg1, String arg2){
+			if (printer != null){
+				printer.println(encode(arg1, arg2));
+			}
+		}
+
 	};
 
     public static String MD5(String rawInput)
@@ -90,16 +134,13 @@ public class Utils {
     }
 
     public static String escapeHtml(String raw){
-
         String output = raw;
-
         output = replaceAll(output, "<", "&lt;");
         output = replaceAll(output, ">", "&gt;");
         output = replaceAll(output, "&", "&amp;");
         output = replaceAll(output, "\'", "&#39;");
         output = replaceAll(output, "\"", "&#34;");
-        
         return output;
-
     }
+
 }
