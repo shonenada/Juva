@@ -7,12 +7,20 @@ public class Column {
 	private String _type;
 	private int _length;
 	private String _defaultValue;
-	
-	public Column(String name, String type, String val, int length){
-		this(name, type, val, length, false);
+
+	public Column(String name, String type){
+		this(name, type, 0, null, false);
 	}
 	
-	public Column(String name, String type, String val, int length,
+	public Column(String name, String type, int length){
+		this(name, type, length, null, false);
+	}
+	
+	public Column(String name, String type, int length, String val){
+		this(name, type, length, val, false);
+	}
+	
+	public Column(String name, String type, int length, String val,
                    boolean isPKey){
 		this._isPrimaryKey = isPKey;
 		this._name = name;

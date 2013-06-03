@@ -14,7 +14,7 @@ import juva.Exceptions.NotValidDatabaseInformationException;
 public class Model {
 	
 	protected String _table;
-	protected Database db;
+	public Database db;
 
 	ArrayList columns = new ArrayList();
 	Map<String, String> _info = new HashMap<String, String>();
@@ -147,6 +147,21 @@ public class Model {
 	        }
 	    }
 	    return false;
+	}
+	
+	public void initModelByResultSet(ResultSet rs) throws SQLException{
+		for (int i=0;i<this.columns.size();++i){
+			Column column = (Column) columns.get(i);
+			this.setValue(column, rs.getString(column.getName()));
+		}
+	}
+	
+	public static void initModelByResultSet(Model model, ResultSet rs)
+            throws SQLException{
+		for (int i=0;i<model.columns.size();++i){
+			Column column = (Column) model.columns.get(i);
+			model.setValue(column, rs.getString(column.getName()));
+		}
 	}
 
 }
