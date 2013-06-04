@@ -1,6 +1,8 @@
 package example.controller;
 
 import java.io.IOException;
+import java.sql.SQLException;
+
 import juva.Controller;
 
 
@@ -12,7 +14,7 @@ public class Index extends Controller {
 		super(URL_PATTERN);
 	}
 
-	public void get() throws IOException{
+	public void get() throws IOException, SQLException{
 		putVar("home", "Shonenada");
 		render("test.html");
 	}
