@@ -17,8 +17,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import juva.Exceptions.TemplateNoVariableKey;
+import juva.Exceptions.AuthenticateFailedException;
 import juva.database.Model;
+import juva.rbac.PermissionTable;
+import juva.rbac.Role;
+import juva.rbac.User;
+import juva.rbac.roles.Everyone;
 
 public class Controller extends HttpServlet {
 
@@ -31,8 +35,11 @@ public class Controller extends HttpServlet {
 	protected ServletContext context;
 	protected String rootPath;
 	protected HttpSession session;
-	protected Map<String, Object> variables = new HashMap<String, Object>(); 
+	protected Map<String, Object> variables = new HashMap<String, Object>();
+	protected User currentUser;
 
+	protected PermissionTable permissionTable; 
+	
 	public Controller() {
 		super();
 	}
@@ -63,7 +70,7 @@ public class Controller extends HttpServlet {
 		this.rootPath = path;
 	}
 	
-	public ArrayList getUrlPatterns(){
+	public ArrayList<String> getUrlPatterns(){
 		return this._urlPatterns;
 	}
 	
@@ -105,12 +112,18 @@ public class Controller extends HttpServlet {
 			throws ServletException, IOException {
 		initActinon(request, response);
 		try {
+			this.authenticate(PermissionTable.METHODS.GET);
 			this.get();
-		} catch (Throwable e) {
+		}
+		catch (AuthenticateFailedException e) {
+			response.sendError(405, "Method Not Allow");
+		}
+		catch (Throwable e) {
 			// TODO log this message.
 			response.sendError(500);
 			e.printStackTrace();
 		}
+		
 	}
 
 	public void doPost(HttpServletRequest request,
@@ -118,7 +131,11 @@ public class Controller extends HttpServlet {
 			throws ServletException, IOException {
 		initActinon(request, response);
 		try {
-			this.post();
+			this.authenticate(PermissionTable.METHODS.POST);
+			this.get();
+		}
+		catch (AuthenticateFailedException e) {
+			response.sendError(405, "Method Not Allow");
 		} catch (Throwable e) {
 			// TODO log this message.
 			response.sendError(500);
@@ -131,7 +148,11 @@ public class Controller extends HttpServlet {
 			throws ServletException, IOException {
 		initActinon(request, response);
 		try {
-			this.put();
+			this.authenticate(PermissionTable.METHODS.PUT);
+			this.get();
+		}
+		catch (AuthenticateFailedException e) {
+			response.sendError(405, "Method Not Allow");
 		} catch (Throwable e) {
 			// TODO log this message.
 			response.sendError(500);
@@ -144,14 +165,18 @@ public class Controller extends HttpServlet {
 			throws ServletException, IOException {
 		initActinon(request, response);
 		try {
-			this.delete();
+			this.authenticate(PermissionTable.METHODS.DELETE);
+			this.get();
+		}
+		catch (AuthenticateFailedException e) {
+			response.sendError(405, "Method Not Allow");
 		} catch (Throwable e) {
 			// TODO log this message.
 			response.sendError(500);
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void initActinon(HttpServletRequest request,
 			                 HttpServletResponse response)
             throws IOException{
@@ -162,8 +187,26 @@ public class Controller extends HttpServlet {
 		session = request.getSession(true);
 		this.out = this.response.getWriter();
 		Utils.Json.registerPrinter(out);
+		currentUser.beCurrentUser(request);
 	}
 
+	public void authenticate(PermissionTable.METHODS method)
+	        throws IOException, AuthenticateFailedException{
+		Role currentRole;
+		
+		if (this.currentUser == null){
+			currentRole = new Everyone();
+		}else{
+			currentRole = this.currentUser.getRole();
+		}
+		
+		boolean allow = this.permissionTable.accessiable(currentRole, method);
+		if (!allow){
+			throw new AuthenticateFailedException();
+		}
+		
+	}
+	
 	protected void putVar(String key, Object value){
 		variables.put(key, value);
 	}
