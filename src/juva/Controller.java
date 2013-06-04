@@ -24,7 +24,6 @@ import juva.rbac.PermissionTable;
 import juva.rbac.Resource;
 import juva.rbac.Role;
 import juva.rbac.Roles;
-import juva.rbac.User;
 
 
 public class Controller extends HttpServlet {
@@ -75,6 +74,10 @@ public class Controller extends HttpServlet {
 	
 	public void setPath(String path){
 		this.rootPath = path;
+	}
+	
+	public void setSession(HttpSession session){
+		this.session = session;
 	}
 	
 	public ArrayList<String> getUrlPatterns(){
@@ -195,7 +198,6 @@ public class Controller extends HttpServlet {
 		this.response = response;
 		this.response.setContentType("text/html;charset=utf-8");
 		this.setContext(context);
-		session = request.getSession(true);
 		this.out = this.response.getWriter();
 		Utils.Json.registerPrinter(out);
 	}

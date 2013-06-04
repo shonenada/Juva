@@ -14,6 +14,7 @@ public class Index extends Controller {
 	
 	private void initPermission() throws Throwable{
 		this.permissionTable.allow(Roles.Everyone, METHODS.GET);
+		this.permissionTable.allow(Roles.LocalUser, METHODS.GET);
 	}
 
 	public Index() throws Throwable{
@@ -23,10 +24,22 @@ public class Index extends Controller {
 	
 	public void before() throws ClassNotFoundException, SQLException{
 		User temp = new User();
-		this.currentUser = temp.beCurrentUser(request);
+		this.currentUser = temp.getCurrentUser(request);
 	}
 
 	public void get() throws Throwable{
+		String test = request.getParameter("test");
+		String random = (String) session.getAttribute("randomString");
+		if (test != null){
+			session.setAttribute("test", test);	
+			out.println(test.equals(random));
+		}
+		else{
+			out.println(session.getAttribute("test"));
+		}
+		out.println(session.getAttribute("username"));
+		
+		
 		putVar("home", "Shonenada");
 		render("test.html");
 	}

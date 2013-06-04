@@ -51,6 +51,7 @@ public class Juva extends HttpServlet {
 		Controller controller = makeController(uri);
 
 		if (controller != null){
+			controller.setSession(request.getSession());
 			controller.doGet(request, response);
 		}else{
 			response.sendError(404, "Page Not Found!");
@@ -66,6 +67,7 @@ public class Juva extends HttpServlet {
 		Controller controller = makeController(uri);
 		
 		if (controller != null){
+			controller.setSession(request.getSession());
 			controller.doPost(request, response);
 		}else{
 			response.sendError(404, "Page Not Found!");
@@ -81,6 +83,7 @@ public class Juva extends HttpServlet {
 		Controller controller = makeController(uri);
 		
 		if (controller != null){
+			controller.setSession(request.getSession());
 			controller.doDelete(request, response);
 		}else{
 			response.sendError(404, "Page Not Found!");
@@ -96,6 +99,7 @@ public class Juva extends HttpServlet {
 		Controller controller = makeController(uri);
 		
 		if (controller != null){
+			controller.setSession(request.getSession());
 			controller.doPut(request, response);
 		}else{
 			response.sendError(404, "Page Not Found!");

@@ -3,16 +3,23 @@ package example.controller;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 
+import example.auth.Roles;
 import example.model.User;
 import juva.Controller;
 import juva.Utils;
+import juva.rbac.PermissionTable.METHODS;
 
 public class Register extends Controller{
 	
 	public static String[] URL_PATTERN = {"/reg"};
 	
-	public Register(){
+	private void initPermission() throws Throwable{
+		this.permissionTable.allow(Roles.Everyone, METHODS.POST);
+	}
+	
+	public Register() throws Throwable{
 		super(URL_PATTERN);
+		initPermission();
 	}
 	
 	public void post() throws Throwable{
@@ -55,6 +62,7 @@ public class Register extends Controller{
 		user.setValue("reg_ip", remoteIp);
 		user.setValue("last_log", currentTime);
 		user.setValue("last_ip", remoteIp);
+		user.setValue("identity", "0");
 		user.setValue("is_trash", "0");
 
 		user.db.insert();

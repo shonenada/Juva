@@ -2,18 +2,25 @@ package example.controller;
 
 import javax.servlet.http.Cookie;
 
+import example.auth.Roles;
 import example.model.User;
 import juva.Controller;
 import juva.Utils;
+import juva.rbac.PermissionTable.METHODS;
 
 public class Login extends Controller{
 
 	public final static String[] URL_PATTERN = {"/login"};
 	
-	public Login(){
-		super(URL_PATTERN);
+	private void initPermission() throws Throwable{
+		this.permissionTable.allow(Roles.Everyone, METHODS.POST);
 	}
-
+	
+	public Login() throws Throwable{
+		super(URL_PATTERN);
+		initPermission();
+	}
+	
 	public void post() throws Throwable{
 		String username = request.getParameter("username");
 		String passwd = request.getParameter("passwd");
@@ -46,7 +53,7 @@ public class Login extends Controller{
         response.addCookie(userCookie);
         response.addCookie(tokenCookie);
         session.setAttribute("username", username);
-        
+
 		Utils.Json.json("true", "登录成功！");
 	}
 	
