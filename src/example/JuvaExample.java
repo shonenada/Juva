@@ -1,16 +1,6 @@
 package example;
 
-import java.lang.annotation.*;
-import java.io.IOException;
-import java.io.PrintWriter;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import juva.Controller;
 import juva.Juva;
-
-import example.controller.Index;
 
 
 public class JuvaExample extends Juva {
