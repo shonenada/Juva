@@ -41,19 +41,32 @@ public class PermissionTable {
 	public boolean accessiable(Role role, METHODS method){
 	
 		if (method == null){
+			System.out.println("not allow null");
 			return false;
 		}
 		
 		if (role == null){
-			role = new Everyone();
+			role = Roles.Everyone;
 		}
 
 		ArrayList<METHODS> allowList = this.allowMethod.get(role);
-		ArrayList<METHODS> denyList = this.allowMethod.get(role);
+		ArrayList<METHODS> denyList = this.denyMethod.get(role);
 		
-		int allowIndex = allowList.indexOf(method);
-		int denyIndex = denyList.indexOf(method);
+		int allowIndex = -1;
+		int denyIndex = -1;
+
+		if (allowList == null){
+			allowIndex = -1;
+		}else{
+			allowIndex = allowList.indexOf(method);
+		}
 		
+		if (denyList == null){
+			denyIndex = -1;
+		}else{
+			denyIndex = denyList.indexOf(method);
+		}
+
 		return (allowIndex != -1 && denyIndex == -1);
 	}
 	

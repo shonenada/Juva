@@ -1,0 +1,23 @@
+package example.auth;
+
+import juva.rbac.*;
+import juva.rbac.roles.*;
+
+public class LocalUser extends Everyone{
+
+	@Override
+	public boolean authenticate(User user, Resource resource) {
+		return false;
+	}
+
+	@Override
+	public Role getParent() {
+		return new Everyone();
+	}
+
+	@Override
+	public String getRoleName() {
+		return "Localuser";
+	}
+
+}

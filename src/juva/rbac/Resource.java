@@ -2,16 +2,18 @@ package juva.rbac;
 
 import java.util.ArrayList;
 
+import juva.Controller;
+
 public class Resource {
 	
-	private String url;
+	private String resourceName;
 	
-	public Resource(String url){
-		this.url = url;
+	public Resource(String name){
+		this.resourceName = name;
 	}
 	
 	public String getUrl(){
-		return this.url;
+		return this.resourceName;
 	}
 	
 }

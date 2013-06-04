@@ -12,6 +12,7 @@ import java.util.Set;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,9 +21,11 @@ import javax.servlet.http.HttpSession;
 import juva.Exceptions.AuthenticateFailedException;
 import juva.database.Model;
 import juva.rbac.PermissionTable;
+import juva.rbac.Resource;
 import juva.rbac.Role;
+import juva.rbac.Roles;
 import juva.rbac.User;
-import juva.rbac.roles.Everyone;
+
 
 public class Controller extends HttpServlet {
 
@@ -36,27 +39,31 @@ public class Controller extends HttpServlet {
 	protected String rootPath;
 	protected HttpSession session;
 	protected Map<String, Object> variables = new HashMap<String, Object>();
-	protected User currentUser;
+	protected juva.rbac.User currentUser;
 
 	protected PermissionTable permissionTable; 
 	
 	public Controller() {
 		super();
+		String thisName = this.getClass().getName();
+		permissionTable = new PermissionTable(new Resource(thisName));
 	}
 	
 	public Controller(String urlPattern) {
-		super();
+		this();
 		this.addUrlPattern(urlPattern);
 		variables.clear();
 	}
 	
 	public Controller(String[] urlPatterns) {
-		super();
+		this();
 		for(int i=0;i<urlPatterns.length; ++i){
 			this.addUrlPattern(urlPatterns[i]);
 		}
 		variables.clear();
 	}
+	
+	public void before() throws Throwable{}
 
 	public void destroy() {
 		super.destroy();
@@ -110,9 +117,10 @@ public class Controller extends HttpServlet {
 	public void doGet(HttpServletRequest request,
 			           HttpServletResponse response)
 			throws ServletException, IOException {
-		initActinon(request, response);
 		try {
+			initActinon(request, response);
 			this.authenticate(PermissionTable.METHODS.GET);
+			this.before();
 			this.get();
 		}
 		catch (AuthenticateFailedException e) {
@@ -129,10 +137,11 @@ public class Controller extends HttpServlet {
 	public void doPost(HttpServletRequest request,
 			            HttpServletResponse response)
 			throws ServletException, IOException {
-		initActinon(request, response);
 		try {
+			initActinon(request, response);
 			this.authenticate(PermissionTable.METHODS.POST);
-			this.get();
+			this.before();
+			this.post();
 		}
 		catch (AuthenticateFailedException e) {
 			response.sendError(405, "Method Not Allow");
@@ -146,10 +155,11 @@ public class Controller extends HttpServlet {
 	public void doPut(HttpServletRequest request,
 			           HttpServletResponse response)
 			throws ServletException, IOException {
-		initActinon(request, response);
 		try {
+			initActinon(request, response);
 			this.authenticate(PermissionTable.METHODS.PUT);
-			this.get();
+			this.before();
+			this.put();
 		}
 		catch (AuthenticateFailedException e) {
 			response.sendError(405, "Method Not Allow");
@@ -163,10 +173,11 @@ public class Controller extends HttpServlet {
 	public void doDelete(HttpServletRequest request,
 			              HttpServletResponse response)
 			throws ServletException, IOException {
-		initActinon(request, response);
 		try {
+			initActinon(request, response);
 			this.authenticate(PermissionTable.METHODS.DELETE);
-			this.get();
+			this.before();
+			this.delete();
 		}
 		catch (AuthenticateFailedException e) {
 			response.sendError(405, "Method Not Allow");
@@ -179,7 +190,7 @@ public class Controller extends HttpServlet {
 
 	public void initActinon(HttpServletRequest request,
 			                 HttpServletResponse response)
-            throws IOException{
+            throws Throwable{
 		this.request = request;
 		this.response = response;
 		this.response.setContentType("text/html;charset=utf-8");
@@ -187,7 +198,6 @@ public class Controller extends HttpServlet {
 		session = request.getSession(true);
 		this.out = this.response.getWriter();
 		Utils.Json.registerPrinter(out);
-		currentUser.beCurrentUser(request);
 	}
 
 	public void authenticate(PermissionTable.METHODS method)
@@ -195,7 +205,7 @@ public class Controller extends HttpServlet {
 		Role currentRole;
 		
 		if (this.currentUser == null){
-			currentRole = new Everyone();
+			currentRole = Roles.Everyone;
 		}else{
 			currentRole = this.currentUser.getRole();
 		}
@@ -205,6 +215,24 @@ public class Controller extends HttpServlet {
 			throw new AuthenticateFailedException();
 		}
 		
+	}
+	
+	public Object getCookies(String cookiesName){
+		return getCookies(cookiesName, this.request);
+	}
+
+	public static Object getCookies(String cookiesName,
+			                          HttpServletRequest request){
+		Object object = null;
+		Cookie[] cookies = request.getCookies();
+	    if (cookies != null){
+	        for(int i=0;i <cookies.length; ++i){
+	            if (cookies[i].getName().equals(cookiesName)){
+	            	object = cookies[i].getValue();
+	            }
+	        }
+	    }
+	    return object;
 	}
 	
 	protected void putVar(String key, Object value){

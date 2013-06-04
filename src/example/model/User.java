@@ -3,12 +3,18 @@ package example.model;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+
 import example.settings;
 
+import juva.Controller;
 import juva.database.Model;
 import juva.database.Column;
+import juva.rbac.Role;
+import juva.rbac.Roles;
 
-public class User extends Model{
+public class User extends Model implements juva.rbac.User{
 
 	public User() throws ClassNotFoundException, SQLException {
 		super("accounts", settings.dbInfo);
@@ -79,6 +85,27 @@ public class User extends Model{
 		else{
 			return true;
 		}
+	}
+
+	@Override
+	public juva.rbac.User beCurrentUser(HttpServletRequest request)
+	        throws SQLException, ClassNotFoundException {
+		User user = null;
+		String username = (String) Controller.getCookies("username", request);
+		if (username != null){
+			user = this.getByUsername(username);
+		}
+	    return user;
+	}
+
+	@Override
+	public String getIdentity() {
+		return this.getValue("id");
+	}
+
+	@Override
+	public Role getRole() {
+		return Roles.Everyone;
 	}
 
 }
