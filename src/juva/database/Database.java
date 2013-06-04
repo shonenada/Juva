@@ -183,7 +183,7 @@ public class Database {
 			String currentValue = model.getValue(currentColumn);
 			preparedStatement.setString(i+1, currentValue);
 		}
-		
+
 		preparedStatement.executeUpdate();
 	
 	}
