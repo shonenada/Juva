@@ -47,7 +47,7 @@ public class Login extends Controller{
         response.addCookie(tokenCookie);
         session.setAttribute("username", username);
         
-		out.println(user.getValue("user"));
+		Utils.Json.json("true", "登录成功！");
 	}
 	
 }
