@@ -12,14 +12,14 @@ public class Index extends Controller {
 
 	final static String[] URL_PATTERN = {"/", "/Index"};
 	
-	private void initPermission() throws Throwable{
+	@Override
+	protected void initPermission() throws Throwable{
 		this.permissionTable.allow(Roles.Everyone, METHODS.GET);
 		this.permissionTable.allow(Roles.LocalUser, METHODS.GET);
 	}
 
 	public Index() throws Throwable{
 		super(URL_PATTERN);
-		initPermission();
 	}
 	
 	public void before() throws ClassNotFoundException, SQLException{

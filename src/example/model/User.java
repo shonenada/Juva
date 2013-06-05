@@ -3,18 +3,22 @@ package example.model;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import example.settings;
+import example.auth.Roles;
 
 import juva.Controller;
 import juva.database.Model;
 import juva.database.Column;
 import juva.rbac.Role;
-import juva.rbac.Roles;
 
 public class User extends Model implements juva.rbac.User{
+	
+	// Identity null for everyone
+	// Identity 0 for localuser
+	// Identity 5 for administator
 
 	public User() throws ClassNotFoundException, SQLException {
 		super("accounts", settings.dbInfo);
@@ -26,9 +30,11 @@ public class User extends Model implements juva.rbac.User{
 		Column reg_ip = new Column("reg_ip", "varchar", 25);
 		Column last_log = new Column("last_log", "Datetime", 25);
 		Column last_ip = new Column("last_ip", "varchar", 25);
+		Column identity = new Column("identity", "tinyint", 1, "0");
 		Column is_trash = new Column("is_trash", "tinyint", 1, "0");
-		this.addColumns(new Column[] {id, user, passwd, screen, created, 
-				                       reg_ip, last_log, last_ip, is_trash});
+		this.addColumns(new Column[] {id, user, passwd, screen,
+									   created, reg_ip, last_log, last_ip,
+									   identity, is_trash});
 	}
 	
 	public User(ResultSet rs) throws ClassNotFoundException, SQLException{
@@ -88,10 +94,13 @@ public class User extends Model implements juva.rbac.User{
 	}
 
 	@Override
-	public juva.rbac.User beCurrentUser(HttpServletRequest request)
+	public juva.rbac.User getCurrentUser(HttpServletRequest request)
 	        throws SQLException, ClassNotFoundException {
 		User user = null;
-		String username = (String) Controller.getCookies("username", request);
+		HttpSession session = request.getSession(true);
+		String sUsername = (String) session.getAttribute("username");
+		String cUsername = (String) Controller.getCookies("username", request);
+		String username = sUsername != null ? sUsername : cUsername;
 		if (username != null){
 			user = this.getByUsername(username);
 		}
@@ -100,12 +109,18 @@ public class User extends Model implements juva.rbac.User{
 
 	@Override
 	public String getIdentity() {
-		return this.getValue("id");
+		return this.getValue("identity");
 	}
 
 	@Override
 	public Role getRole() {
-		return Roles.Everyone;
+		Role role = Roles.Everyone;
+		String identity = this.getIdentity();
+		if (identity == null)
+			role = Roles.Everyone;
+		if ( identity != null && !identity.equals("5"))
+			role = Roles.LocalUser;
+		return role;
 	}
 
 }

@@ -15,7 +15,7 @@ public class Weibo extends Model{
 		Column created = new Column("created", "timestamp");
 		Column content = new Column("content", "varchar", 140);
 		Column aid = new Column("aid", "int");
-		Column is_repost = new Column("is_repost", "int"); // 
+		Column is_repost = new Column("is_repost", "int");
 		Column is_trash = new Column("is_trash", "tinyint", 1, "false");
 		this.addColumns(new Column[] {id, uid, created, content, aid,
 				                       is_repost, is_trash});

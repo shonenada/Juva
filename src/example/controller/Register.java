@@ -13,13 +13,12 @@ public class Register extends Controller{
 	
 	public static String[] URL_PATTERN = {"/reg"};
 	
-	private void initPermission() throws Throwable{
+	protected void initPermission() throws Throwable{
 		this.permissionTable.allow(Roles.Everyone, METHODS.POST);
 	}
 	
 	public Register() throws Throwable{
 		super(URL_PATTERN);
-		initPermission();
 	}
 	
 	public void post() throws Throwable{

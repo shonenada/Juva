@@ -12,13 +12,12 @@ public class Login extends Controller{
 
 	public final static String[] URL_PATTERN = {"/login"};
 	
-	private void initPermission() throws Throwable{
+	protected void initPermission() throws Throwable{
 		this.permissionTable.allow(Roles.Everyone, METHODS.POST);
 	}
 	
 	public Login() throws Throwable{
 		super(URL_PATTERN);
-		initPermission();
 	}
 	
 	public void post() throws Throwable{

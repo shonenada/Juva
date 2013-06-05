@@ -14,8 +14,10 @@ public class Focus extends Model{
 		Column uid = new Column("uid", "int");
 		Column dst_id = new Column("dst_id", "int");
 		Column created = new Column("created", "timestamp");
+		Column is_hidden = new Column("is_hiddent", "tinyint");
 		Column is_trash = new Column("is_trash", "tinyint");
-		this.addColumns(new Column[]{id, uid, dst_id, created, is_trash});
+		this.addColumns(new Column[]{id, uid, dst_id, created,
+                                      is_hidden, is_trash});
 	}
 	
 }
