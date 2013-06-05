@@ -24,6 +24,7 @@ import juva.rbac.PermissionTable;
 import juva.rbac.Resource;
 import juva.rbac.Role;
 import juva.rbac.Roles;
+import juva.rbac.PermissionTable.METHODS;
 
 
 public class Controller extends HttpServlet {
@@ -42,19 +43,24 @@ public class Controller extends HttpServlet {
 
 	protected PermissionTable permissionTable; 
 	
-	public Controller() {
+	public Controller() throws Throwable {
 		super();
 		String thisName = this.getClass().getName();
 		permissionTable = new PermissionTable(new Resource(thisName));
+		initPermission();
 	}
 	
-	public Controller(String urlPattern) {
+	public Controller(String urlPattern) throws Throwable {
 		this();
 		this.addUrlPattern(urlPattern);
 		variables.clear();
 	}
 	
-	public Controller(String[] urlPatterns) {
+	protected void initPermission() throws Throwable{
+		this.permissionTable.allow(Roles.Everyone, METHODS.GET);
+	}
+	
+	public Controller(String[] urlPatterns) throws Throwable {
 		this();
 		for(int i=0;i<urlPatterns.length; ++i){
 			this.addUrlPattern(urlPatterns[i]);
@@ -205,18 +211,15 @@ public class Controller extends HttpServlet {
 	public void authenticate(PermissionTable.METHODS method)
 	        throws IOException, AuthenticateFailedException{
 		Role currentRole;
-		
 		if (this.currentUser == null){
 			currentRole = Roles.Everyone;
 		}else{
 			currentRole = this.currentUser.getRole();
 		}
-		
 		boolean allow = this.permissionTable.accessiable(currentRole, method);
 		if (!allow){
 			throw new AuthenticateFailedException();
 		}
-		
 	}
 	
 	public Object getCookies(String cookiesName){
