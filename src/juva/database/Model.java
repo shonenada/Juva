@@ -8,8 +8,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import juva.Exceptions.NotValidDatabaseInformationException;
-
 
 public class Model {
 	
@@ -29,7 +27,7 @@ public class Model {
 		this.db.connect();
 	}
 	
-	public Model get(String id)
+	public Model find(String id)
 	    throws SQLException, ClassNotFoundException,
 	            InstantiationException, IllegalAccessException{
 		Model output = this.getClass().newInstance();

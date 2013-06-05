@@ -304,5 +304,6 @@ public class Database {
 	public void clearSelectFilter(){
 		this.selectFilter.clear();
 	}
+
 	
 }
