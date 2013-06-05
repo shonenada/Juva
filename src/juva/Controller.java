@@ -56,16 +56,16 @@ public class Controller extends HttpServlet {
 		variables.clear();
 	}
 	
-	protected void initPermission() throws Throwable{
-		this.permissionTable.allow(Roles.Everyone, METHODS.GET);
-	}
-	
 	public Controller(String[] urlPatterns) throws Throwable {
 		this();
 		for(int i=0;i<urlPatterns.length; ++i){
 			this.addUrlPattern(urlPatterns[i]);
 		}
 		variables.clear();
+	}
+
+	protected void initPermission() throws Throwable{
+		this.permissionTable.allow(Roles.Everyone, METHODS.GET);
 	}
 	
 	public void before() throws Throwable{}
