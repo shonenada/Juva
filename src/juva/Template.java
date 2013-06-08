@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Stack;
@@ -219,9 +220,12 @@ public class Template {
         Object varSet = variables.get(setName);
         if (varSet != null){
         	if (varSet instanceof String[]){
-        		System.out.println("String");
         		String[] vars = (String[]) varSet;
         		output = processString(input, vars, singleName);
+        	}
+        	if (varSet instanceof ArrayList){
+        		ArrayList<ArrayList> vars = (ArrayList<ArrayList>) varSet;
+        		output = processArrayList(input, vars);
         	}
         	if (varSet instanceof ResultSet){
         		ResultSet rs = (ResultSet) varSet;
@@ -246,12 +250,36 @@ public class Template {
     	}
     	return output;
     }
+    
+    public String processArrayList(String input, ArrayList<ArrayList> varSet){
+    	String output = "";
+    	String[] lines = input.split("\n");
+    	for (int j=0;j<varSet.size();++j){
+    		String temp = input;
+    		ArrayList list = varSet.get(j);
+    		for (int i=0;i<lines.length;++i){
+        		String line = lines[i];
+        		Matcher matcher = varPattern.matcher(line);
+        		while(matcher.find()){
+        	        String foundString =
+                               matcher.group(0);
+        	        String[] names = removeEtbrackets(foundString).split("\\.");
+        	        int index = Integer.parseInt(names[1]);
+        	        String replacement = (String) list.get(index);
+        	        temp = Utils.replaceAll(temp, foundString, replacement);
+        	    }
+    		}
+    		output += temp;
+    	}
+    	return output;
+    }
 
     public String processResultSet(String input, ResultSet rs)
             throws SQLException{
-    	String output = input;
+    	String output = "";
     	String[] lines = input.split("\n");
 		while (rs.next()){
+			String temp = input;
 			for (int i=0;i<lines.length;++i){
     			String line = lines[i];
     			Matcher matcher = varPattern.matcher(line);
@@ -261,9 +289,10 @@ public class Template {
     	            String[] names = removeEtbrackets(foundString).split("\\.");
     	            String varName = names[1];
     	            String replacement = rs.getString(varName);
-   	                output = Utils.replaceAll(output, foundString, replacement);
+    	            temp = Utils.replaceAll(temp, foundString, replacement);
     	        }
     		}
+			output += temp;
 		}
 		return output;
     }
