@@ -19,7 +19,7 @@
  
  <servlet-mapping>
   <servlet-name>Captcha</servlet-name>
-  <url-pattern>/Captcha</url-pattern>
+  <url-pattern>/captcha</url-pattern>
  </servlet-mapping>
 
  
