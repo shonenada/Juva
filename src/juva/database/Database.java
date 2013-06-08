@@ -51,7 +51,8 @@ public class Database {
 	private Statement statement = null;
 	private PreparedStatement preparedStatement;
 	
-	private Map<String, String> selectFilter = new HashMap<String, String>();
+	private ArrayList<String[]> selectFilter = new ArrayList<String[]>();
+	private boolean isDesc = false;
 
 	public Database(Model model) throws ClassNotFoundException{
 		Class.forName("com.mysql.jdbc.Driver");
@@ -94,6 +95,10 @@ public class Database {
 	public void addArgument(String argName, String value){
 		Argument argument = new Argument(argName, value);
 		this._arguments.add(argument);
+	}
+	
+	public void setDesc(){
+		this.isDesc = true;
 	}
 
 	public void connect()
@@ -230,9 +235,16 @@ public class Database {
 	}
 	
 	public void addSelectFilter(String columnName, String columnValue){
+		this.addSelectFilter(columnName, columnValue, "=");
+	}
+	
+	public void addSelectFilter(String columnName,
+                                 String columnValue,
+                                 String operator){
 		Column column = model.getColumn(columnName);
 		if (model.isColumExsit(column)){
-			selectFilter.put(columnName, columnValue);
+			String[] tuple = {columnName, columnValue, operator};
+			selectFilter.add(tuple);
 		}		
 	}
 	
@@ -256,27 +268,46 @@ public class Database {
 		selectSql = removeComma(selectSql);
 		selectSql = selectSql + " FROM " + table + " WHERE ";
 		
-		Set<String> columnNames = selectFilter.keySet();
-		Iterator iterator = columnNames.iterator();
-		while (iterator.hasNext()){
-			String columnName = (String) iterator.next();
-			selectSql = selectSql + columnName + " = ? AND ";
+		for (int i=0;i<selectFilter.size();++i){
+			String[] columnInfo = selectFilter.get(i);
+			selectSql = selectSql + columnInfo[0] + " " + columnInfo[2] +" ? AND ";
 		}
+
+		selectSql = removeAndOrCmd(selectSql);
 		
-		selectSql = removeAndCmd(selectSql);
+		if (isDesc){
+			selectSql += " ORDER BY id DESC";
+		}
 		
     	preparedStatement = connection.prepareStatement(selectSql);
 		preparedStatement.clearParameters();
 
-		int i = 1;
-		iterator = columnNames.iterator();
-		while (iterator.hasNext()){
-			String columnName = (String) iterator.next();
-			String currentValue = selectFilter.get(columnName);
-			preparedStatement.setString(i, currentValue);
-			i = i + 1;
+		for (int i=0;i<selectFilter.size();++i){
+			String[] columnInfo = selectFilter.get(i);
+			String currentValue = columnInfo[1];
+			preparedStatement.setString(i+1, currentValue);
 		}
 		
+		ResultSet rs = preparedStatement.executeQuery();
+		return rs;
+	}
+	
+	public ResultSet querySelect(String[] columns, String sql, String[] param)
+        throws SQLException{
+		String table = model.getTable();
+		String selectSql = "SELECT ";
+		for (int i=0; i<columns.length; ++i){
+			String column = columns[i];
+			selectSql = selectSql + column + ", ";
+		}
+		selectSql = removeComma(selectSql);
+		selectSql = selectSql + " FROM " + table + " WHERE ";
+		selectSql += sql;
+		preparedStatement = connection.prepareStatement(selectSql);
+		preparedStatement.clearParameters();
+		for (int i=0;i<param.length;++i){
+			preparedStatement.setString(i+1, param[i]);
+		}
 		ResultSet rs = preparedStatement.executeQuery();
 		return rs;
 	}
@@ -291,8 +322,11 @@ public class Database {
 		return input;
 	}
 	
-	private String removeAndCmd(String input){
-		if (input.endsWith("AND")){
+	public String removeAndOrCmd(String input){
+		if (input.endsWith("OR")){
+			input = input.substring(0, input.length() - 2);
+		}
+		if (input.endsWith("AND") || input.endsWith("OR ")){
 			input = input.substring(0, input.length() - 3);
 		}
 		if (input.endsWith("AND ")){
