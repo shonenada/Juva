@@ -5,7 +5,7 @@ import juva.rbac.Role;
 import juva.rbac.User;
 import juva.rbac.roles.Everyone;
 
-public class Administartor extends Everyone{
+public class Administrator extends Everyone{
 
 	@Override
 	public boolean authenticate(User user, Resource resource) {

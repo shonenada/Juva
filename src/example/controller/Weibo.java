@@ -1,5 +1,7 @@
 package example.controller;
 
+import java.sql.SQLException;
+
 import example.auth.Roles;
 import juva.Controller;
 import juva.Utils;
@@ -21,10 +23,15 @@ public class Weibo extends Controller{
 		super(URL_PATTERN);
 	}
 	
+	public void before() throws ClassNotFoundException, SQLException{
+		User temp = new User();
+		this.currentUser = temp.getCurrentUser(request);
+	}
+	
 	public void post() throws Throwable{
 		String sUsername = (String) session.getAttribute("username");
 		String cUsername = (String) this.getCookies("username");
-		String username = cUsername != null ? sUsername : cUsername;
+		String username = sUsername != null ? sUsername : cUsername;
 		User userModel = new User();
 		User user = userModel.getByUsername(username);
 		if (user == null){
@@ -32,11 +39,11 @@ public class Weibo extends Controller{
 		}
 		
 		String weiboContent = this.request.getParameter("weibo");
-		if (weiboContent.length() < 1){
+		if (weiboContent != null && weiboContent.length() < 1){
 			Utils.Json.json("false", "请输入微博内容");
 			return ;
 		}
-		if (weiboContent.length() > 140){
+		if (weiboContent != null && weiboContent.length() > 140){
 			Utils.Json.json("false", "微博最大长度为140个字符.");
 			return ;
 		}
@@ -49,7 +56,7 @@ public class Weibo extends Controller{
 		weibo.setValue("is_trash", "0");
 		weibo.db.insert();
 		
-		Utils.Json.json("false", "发布成功！");
+		Utils.Json.json("true", "发布成功！");
 		
 	}
 	

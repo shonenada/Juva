@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Juva</title>
+    <base href="{{ url_prefix }}/">
+    <script type="text/javascript" src="{{ url_prefix }}/static/scripts/component/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="{{ url_prefix }}/static/scripts/component/jquery.form.js"></script>
+    <script type="text/javascript" src="{{ url_prefix }}/static/scripts/global.js"></script>
+    <link rel="stylesheet" href="{{ url_prefix }}/static/styles/base.css" type="text/css">
+    <link rel="stylesheet" href="{{ url_prefix }}/static/styles/messagebox.css" type="text/css">
+
+    <link rel="stylesheet" type="text/css" href="{{ url_prefix }}/static/styles/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_prefix }}/static/styles/main.css">
+    <script type="text/javascript" src="{{ url_prefix }}/static/scripts/main.js"></script>
+</head>
+
+<body>
+    <div id="header">
+        <div class="content">
+            <ul>
+                <li class="current"><a href="{{ url_prefix }}/main">主页</a></li>
+                <li><a href="{{ url_prefix }}/focus">我的关注</a></li>
+                <li><a href="{{ url_prefix }}/fans">我的粉丝</a></li>
+            </ul>
+            <span class="right">欢迎您，{{ nickname }}。<a href="{{ url_prefix}}/logout">注销</a></span>
+        </div>
+    </div>
+
+    <div id="main" class="content">
+        <div id="person" class="borad">
+            <h4>{{ nickname }}</h4>
+            <div class="line"></div>
+            <ul id="person-list">
+                <a href="{{ url_prefix }}/weibo?user={{nickname}}"><li>微博<span>{{ weibo_count }}</span></li></a>
+                <a href="{{ url_prefix }}/focus?user={{nickname}}"><li>关注<span>{{ focus_count }}</span></li></a>
+                <a href="{{ url_prefix }}/fans?user={{nickname}}"><li>粉丝<span>{{ fans_count }}</span></li></a>
+            </ul>
+        </div>
+        <div id="weibo" class="borad">
+            <div id="weibo-box">
+                <h4>发布微博</h4>
+                <form action="{{ url_prefix }}/weibo" method="post" id="weibo-form">
+                    <textarea name="weibo"></textarea>
+                    <input type="submit" class="btn btn-danger"/>
+                </form>
+            </div>
+            <h4>新微博</h4>
+            <div class="line"></div>
+            {% if has_weibo: %}
+                {%for weibo in weibos: %}
+                    {{ weibo.0 }} 在 {{ weibo.1 }} 说：<br />
+                    <div class="weibo-content"><p>{{ weibo.2 }}</p></div>
+                {%endfor%}
+            {% endif %}
+        </div>
+    </div>
+
+    <div id="footer">
+
+    </div>
+</body>
+</html>

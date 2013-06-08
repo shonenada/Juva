@@ -21,6 +21,14 @@ public class Login extends Controller{
 	}
 	
 	public void post() throws Throwable{
+		String captcha = request.getParameter("captcha").toLowerCase();
+		String trueCaptcha = (String) session.getAttribute("randomString");
+		trueCaptcha = trueCaptcha.toLowerCase();
+		if (!captcha.equals(trueCaptcha)){
+			Utils.Json.json("false", "验证码错误！");
+			return ;
+		}
+		
 		String username = request.getParameter("username");
 		String passwd = request.getParameter("passwd");
 		if (username == null || passwd == null){

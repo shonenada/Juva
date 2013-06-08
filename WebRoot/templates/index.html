@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Juva</title>
+    <base href="{{ url_prefix }}/">
+    <script type="text/javascript" src="{{ url_prefix }}/static/scripts/component/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="{{ url_prefix }}/static/scripts/component/jquery.form.js"></script>
+    <script type="text/javascript" src="{{ url_prefix }}/static/scripts/global.js"></script>
+    <link rel="stylesheet" href="{{ url_prefix }}/static/styles/base.css" type="text/css">
+    <link rel="stylesheet" href="{{ url_prefix }}/static/styles/messagebox.css" type="text/css">
+
+    <link rel="stylesheet" type="text/css" href="{{ url_prefix }}/static/styles/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_prefix }}/static/styles/topcoat-0.3.0/css/topcoat-mobile-light.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_prefix }}/static/styles/index.css">
+    <script type="text/javascript" src="{{ url_prefix }}/static/scripts/index.js"></script>
+    <script type="text/javascript" src="{{ url_prefix }}/static/scripts/login.js"></script>
+    <script type="text/javascript" src="{{ url_prefix }}/static/scripts/register.js"></script>
+
+</head>
+
+<body>
+    <div id="banner">
+        <h1 class="banner-font">欢迎来到 {{ site_name }}</h1>
+        <p>{{ site_description }}</p>
+    </div>
+    <div id="info">
+
+        <div id="login">
+            <form id="login-form" action="login" method="post">
+                <p>
+                    <li><label>邮箱：</label><input type="email" value="" name="username" required /></li>
+                    <li><label>密码：</label><input type="password" value="" name="passwd" required /></li>
+                    <li><label>验证码：</label><input type="text" value="" name="captcha" required /></li>
+                    <li><img src="{{ url_prefix }}/captcha" onclick="this.src=this.src" id="login-captcha" /></li>
+                    <li><label class="checkbox fix-width-label"><input type="checkbox" value="true" name="remember" /> Remember Me!</label></li>
+                    <input type="submit" value="登录" class="topcoat-button fix-small-btn" />
+                    <input type="button" value="注册" id="reg-btn" class="topcoat-button fix-small-btn" />
+                </p>
+            </form>
+        </div>
+
+        <div id="register">
+            <form id="reg-form" action="reg" method="post">
+                <p>
+                    <li><label>邮箱：</label><input type="email" value="" name="username" required /></li>
+                    <li><label>密码：</label><input type="password" value="" name="passwd" required /></li>
+                    <li><label>昵称：</label><input type="text" value="" name="screen" required /></li>
+                    <li><label>验证码：</label><input type="text" value="" name="captcha" required /></li>
+                    <li><img src="{{ url_prefix }}/captcha" onclick="this.src=this.src" id="reg-captcha" /></li><br />
+                    <input type="submit" value="提交" class="topcoat-button fix-small-btn" />
+                    <input type="button" value="取消" id="cancel-btn" class="topcoat-button fix-small-btn" />
+                </p>
+            </form>
+        </div>
+
+    </div>
+    <div id="footer">
+        <p><a href="#">关于</a> &copy; <a href="http://shonenada.com">shonenada</a></p>
+    </div>
+</body>
+</html>

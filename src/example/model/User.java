@@ -48,9 +48,13 @@ public class User extends Model implements juva.rbac.User{
 		this.db.addSelectFilter("passwd", passwd);
 		ResultSet rs = this.db.select();
 		if (rs.next()){
+			this.db.connect();
 			User user = new User(rs);
+			this.db.closeConnection();
 			return user;
 		}else{
+			this.db.connect();
+			this.db.closeConnection();
 			return null;
 		}
 	}
@@ -63,9 +67,13 @@ public class User extends Model implements juva.rbac.User{
 		this.db.addSelectFilter("user", username);
 		ResultSet rs = this.db.select();
 		if (rs.next()){
+			this.db.connect();
 			User user = new User(rs);
+			this.db.closeConnection();
 			return user;
 		}else{
+			this.db.connect();
+			this.db.closeConnection();
 			return null;
 		}
 	}
@@ -74,6 +82,7 @@ public class User extends Model implements juva.rbac.User{
 			throws SQLException, ClassNotFoundException{
 		this.db.clearSelectFilter();
 		this.db.addSelectFilter("screen", screen);
+		this.db.connect();
 		ResultSet rs = this.db.select();
 		if (rs.next()){
 			return true;
@@ -96,6 +105,7 @@ public class User extends Model implements juva.rbac.User{
 	@Override
 	public juva.rbac.User getCurrentUser(HttpServletRequest request)
 	        throws SQLException, ClassNotFoundException {
+		this.db.connect();
 		User user = null;
 		HttpSession session = request.getSession(true);
 		String sUsername = (String) session.getAttribute("username");
@@ -104,6 +114,7 @@ public class User extends Model implements juva.rbac.User{
 		if (username != null){
 			user = this.getByUsername(username);
 		}
+		this.db.closeConnection();
 	    return user;
 	}
 

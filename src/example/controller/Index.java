@@ -10,12 +10,13 @@ import juva.rbac.PermissionTable.METHODS;
 
 public class Index extends Controller {
 
-	final static String[] URL_PATTERN = {"/", "/Index"};
+	final static String[] URL_PATTERN = {"/"};
 	
 	@Override
 	protected void initPermission() throws Throwable{
 		this.permissionTable.allow(Roles.Everyone, METHODS.GET);
 		this.permissionTable.allow(Roles.LocalUser, METHODS.GET);
+		this.permissionTable.allow(Roles.Administrator, METHODS.GET);
 	}
 
 	public Index() throws Throwable{
@@ -32,16 +33,11 @@ public class Index extends Controller {
 		String random = (String) session.getAttribute("randomString");
 		if (test != null){
 			session.setAttribute("test", test);	
-			out.println(test.equals(random));
 		}
-		else{
-			out.println(session.getAttribute("test"));
-		}
-		out.println(session.getAttribute("username"));
 		
-		
-		putVar("home", "Shonenada");
-		render("test.html");
+		putVar("site_name", "Juva");
+		putVar("site_description", "还没想好要写什么好。");
+		render("index.html");
 	}
 	
 }

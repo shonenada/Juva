@@ -1,5 +1,6 @@
 package example.model;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import example.settings;
@@ -19,6 +20,18 @@ public class Weibo extends Model{
 		Column is_trash = new Column("is_trash", "tinyint", 1, "false");
 		this.addColumns(new Column[] {id, uid, created, content, aid,
 				                       is_repost, is_trash});
+	}
+	
+	public ResultSet friendWeibo(String[] friendList)
+	        throws SQLException{
+		String selectSql = " ";
+		for (int i=0;i<friendList.length;++i){
+			selectSql += "uid = ? OR "; 
+		}
+		selectSql = this.db.removeAndOrCmd(selectSql);
+		selectSql += " AND is_trash = 0 ORDER BY id DESC";
+		String[] columns = {"content", "uid", "created", "is_repost", "aid"};
+		return this.db.querySelect(columns, selectSql, friendList);
 	}
 
 }

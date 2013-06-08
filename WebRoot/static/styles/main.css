@@ -1,0 +1,113 @@
+body{
+    background: url(../images/bg.jpg);
+}
+
+#header{
+    position: fixed;
+    top: 0px;
+    width: 100%;
+    height: 40px;
+    z-index: 5555;
+    background: url(../images/sprite_bg.jpg);
+    color: #fff;
+    line-height: 40px;
+}
+
+#header ul{
+    display: inline;
+    margin-left: 0px;
+}
+
+#header li{
+    line-height: 40px;
+    display: inline-block;
+    width: 100px;
+    text-align: center;
+    color: #666;
+}
+
+#header li.current{
+    color: #fff;
+    box-shadow: inset 0 5px 10px rgba(0,0,0,.5);
+}
+
+#header a{
+    color: #fff;
+    font-weight: bold;
+}
+
+#main{
+    background: rgba(255, 255, 255, 0.3);
+    padding: 10px;
+    padding-top: 60px;
+}
+
+#person{
+    width: 275px;
+    float: left;
+}
+
+#person h4{
+    text-indent: 1em;
+}
+
+#weibo{
+    margin-left: 20px;
+    width: 580px;
+    display: inline-block;
+}
+
+#weibo-box{
+    width: 100%;
+}
+
+#weibo-box textarea{
+    width: 565px;
+    height: 80px;
+}
+
+#weibo-box {
+    text-align: right;
+}
+
+#person-list li{
+    display: inline-block;
+    width: 30%;
+    margin-top: 5px;
+    text-align: center;
+}
+
+#person-list span{
+    display: block;
+    text-align: center;
+    font-weight: bold;
+}
+
+.content{
+    width: 900px;
+    margin: 0 auto;
+}
+
+.right{
+    float: right;
+}
+
+.borad{
+    background: #fafafa;
+    border-radius: 5px;
+    border: 1px solid #aaa;
+    box-shadow: 1px 1px 0px 0px #bbb;
+    padding: 5px;
+}
+
+.line{
+    width: 100%;
+    height: 1px;
+    background: #aaa;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.weibo-content{
+    text-indent: 2em;
+}
