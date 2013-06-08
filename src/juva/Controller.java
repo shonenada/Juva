@@ -128,8 +128,8 @@ public class Controller extends HttpServlet {
 			throws ServletException, IOException {
 		try {
 			initActinon(request, response);
-			this.authenticate(PermissionTable.METHODS.GET);
 			this.before();
+			this.authenticate(PermissionTable.METHODS.GET);
 			this.get();
 		}
 		catch (AuthenticateFailedException e) {
@@ -148,8 +148,8 @@ public class Controller extends HttpServlet {
 			throws ServletException, IOException {
 		try {
 			initActinon(request, response);
-			this.authenticate(PermissionTable.METHODS.POST);
 			this.before();
+			this.authenticate(PermissionTable.METHODS.POST);
 			this.post();
 		}
 		catch (AuthenticateFailedException e) {
@@ -166,8 +166,8 @@ public class Controller extends HttpServlet {
 			throws ServletException, IOException {
 		try {
 			initActinon(request, response);
-			this.authenticate(PermissionTable.METHODS.PUT);
 			this.before();
+			this.authenticate(PermissionTable.METHODS.PUT);
 			this.put();
 		}
 		catch (AuthenticateFailedException e) {
@@ -184,8 +184,8 @@ public class Controller extends HttpServlet {
 			throws ServletException, IOException {
 		try {
 			initActinon(request, response);
-			this.authenticate(PermissionTable.METHODS.DELETE);
 			this.before();
+			this.authenticate(PermissionTable.METHODS.DELETE);
 			this.delete();
 		}
 		catch (AuthenticateFailedException e) {
@@ -241,6 +241,11 @@ public class Controller extends HttpServlet {
 	}
 	
 	protected void putVar(String key, Object value){
+		if (value instanceof Integer ||
+            value instanceof Double ||
+            value instanceof Float){
+			value = value + "";
+		}
 		variables.put(key, value);
 	}
 	
