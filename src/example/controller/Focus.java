@@ -2,6 +2,7 @@ package example.controller;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import example.auth.Roles;
 import example.model.FocusProxy;
@@ -25,8 +26,29 @@ public class Focus extends Controller{
 	}
 	
 	public void get() throws Throwable{
+		User user = (User) this.currentUser;
+		String nickname = user.getValue("screen");
+		String r_param = request.getParameter("user");
+		String screen = r_param != null ? r_param : user.getValue("screen");
+		String currentUserId = user.getValue("id");
 		
-	}
+		int weibo_count = weiboProxy.getWeiboCount(currentUserId);
+		int focus_count = focusProxy.getFocusCount(currentUserId);
+		int fans_count = focusProxy.getFansCount(currentUserId);
+		
+		User queryUser = userProxy.getByScreen(screen);
+		String uid = queryUser.getValue("id");
+		ArrayList focusList = focusProxy.getFocusList(uid);
+	
+		putVar("nickname", nickname);
+		putVar("screenName", screen);
+		putVar("focusList", focusList);
+		putVar("weibo_count", weibo_count);
+		putVar("fans_count", fans_count);
+		putVar("focus_count", focus_count);
+		
+		render("focus.html");
+	} 
 	
 	public void post() throws Throwable{
 		
@@ -66,7 +88,7 @@ public class Focus extends Controller{
 		
 		FocusProxy focusProxy = new FocusProxy();
 		example.model.Focus old_focus = focusProxy.getByIDs(user_id, dst_id);
-		if (old_focus != null && !old_focus.getValue("is_trash").equals("1")){
+		if (old_focus != null && old_focus.getValue("is_trash").equals("0")){
 			Utils.Json.json("false", "您已关注该用户!");
 			return ;
 		}

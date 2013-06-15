@@ -39,15 +39,15 @@ public class Main extends Controller{
 		}else{
 			putFalseVar("has_weibo");
 		}
-		putVar("weibos", weiboList);
 		
-		putVar("focus_count", focus_count);
+		putVar("weibos", weiboList);
 		putTrueVar("is_current_user");
 		putFalseVar("not_current_user");
 		putVar("nickname", user_nickname);
 		putVar("screenName", user_nickname);
 		putVar("weibo_count", weibo_count);
 		putVar("fans_count", fans_count);
+		putVar("focus_count", focus_count);
 		
 		render("main.html");
 	}
