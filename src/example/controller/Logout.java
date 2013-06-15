@@ -22,11 +22,11 @@ public class Logout extends Controller{
 	}
 	
 	public void get() throws Throwable{
-		this.session.removeAttribute("username");
+		this.session.removeAttribute("email");
 		Cookie[] cookies = request.getCookies();
 	    if (cookies != null){
 	        for(int i=0;i <cookies.length; ++i){
-	            if (cookies[i].getName().equals("username")){
+	            if (cookies[i].getName().equals("email")){
 	                cookies[i].setMaxAge(0);
 	                response.addCookie(cookies[i]);
 	            }
