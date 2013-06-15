@@ -121,6 +121,7 @@ public class WeiboProxy extends ModelProxy{
 				weiboList.add(row);
 			}
 		}
+		commentProxy.close();
 		return weiboList;
 	}
 	

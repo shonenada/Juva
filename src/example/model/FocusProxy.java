@@ -2,6 +2,7 @@ package example.model;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import juva.database.ModelProxy;
 
@@ -27,7 +28,6 @@ public class FocusProxy extends ModelProxy{
 		}
 		return null;
 	}
-
 	
 	public ResultSet getByUid(String uid) throws SQLException{
 		this.db.clearSelectFilter();
@@ -49,6 +49,24 @@ public class FocusProxy extends ModelProxy{
 		this.db.addSelectFilter("uid", uid);
 		this.db.addSelectFilter("is_hidden", "0");
 		return this.count();
+	}
+	
+	public ArrayList getFocusList(String uid)
+	        throws Throwable{
+		ArrayList output = new ArrayList();
+		UserProxy userProxy = new UserProxy();
+		ResultSet focusSet = this.getByUid(uid);
+		while (focusSet.next()){
+			ArrayList row = new ArrayList();
+			User tempUser = (User) userProxy.find(focusSet.getString("dst_id"));
+			String tempUserId = tempUser.getValue("id");
+			String tempUserName = tempUser.getValue("screen");
+			row.add(tempUserId);
+			row.add(tempUserName);
+			output.add(row);
+		}
+		
+		return output;
 	}
 	
 }

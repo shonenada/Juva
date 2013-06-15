@@ -29,6 +29,7 @@ public class UserProxy extends ModelProxy {
 	
 	public User getByEmailAndPasswd (String email, String passwd)
 	    	throws SQLException, ClassNotFoundException{
+		this.db.clearSelectFilter();
 		this.db.addSelectFilter("email", email);
 		this.db.addSelectFilter("passwd", passwd);
 		ResultSet rs = this.db.select();
