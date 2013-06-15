@@ -8,55 +8,24 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import juva.Controller;
+
 
 public class Model {
 	
 	protected String _table;
-	public Database db;
-
+	
 	ArrayList columns = new ArrayList();
-	Map<String, String> _info = new HashMap<String, String>();
 	Map<Column, String> data = new HashMap<Column, String>();
 	
-	public Model(String table, Map<String, String> info)
+	public Model(String table)
 	    throws ClassNotFoundException, SQLException {
 		this._table = table;
-		this._info = info;
-		this.db = new Database(this);
-		this.db.setInfo(info);
-		this.db.connect();
 	}
 	
-	public Model find(String id)
-	    throws SQLException, ClassNotFoundException,
-	            InstantiationException, IllegalAccessException{
-		Model output = this.getClass().newInstance();
-		output._table = this._table;
-		output._info = this._info;
-		output.columns = this.columns;
-		output.db.addSelectFilter("id", id);
-		ArrayList columns = output.getColumnList();
-		ResultSet first = output.db.select();
-		if (first.next()){
-			for (int i=0;i<columns.size();++i){
-				Column column = (Column )columns.get(i);
-				String columnName = column.getName();
-				String columnValue = first.getString(columnName);
-				output.setValue(columnName, columnValue);
-			}
-		}
-		output.db.clearSelectFilter();
-		return output;
-	}
-
 	public String getTable(){
 		return this._table;
 	}
-
-	public Database getDb(){
-		return db;
-	}
-	
 	public Map<Column, String> getData(){
 		return data;
 	}

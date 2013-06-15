@@ -103,32 +103,35 @@ public class Database {
 
 	public void connect()
 	    throws SQLException{
-		
-		boolean isValid = this.valid();
-		if (isValid){
-			String jdbc = ("jdbc:" + _type + "://" + _host + ":" + _port +
-					       "/" + _name);
-			int argumentNum = this._arguments.size();
-			if (argumentNum > 0){
-				jdbc = jdbc + "?";
-				for (int i=0;i<argumentNum;++i){
-					Argument arg = (Argument) this._arguments.get(i);
-					String argName = arg.getName();
-					String argValue = arg.getValue();
-					jdbc = jdbc + argName + "=" + argValue + "&";
+		if (connection == null){
+			boolean isValid = this.valid();
+			if (isValid){
+				String jdbc = ("jdbc:" + _type + "://" + _host + ":" + _port +
+						       "/" + _name);
+				int argumentNum = this._arguments.size();
+				if (argumentNum > 0){
+					jdbc = jdbc + "?";
+					for (int i=0;i<argumentNum;++i){
+						Argument arg = (Argument) this._arguments.get(i);
+						String argName = arg.getName();
+						String argValue = arg.getValue();
+						jdbc = jdbc + argName + "=" + argValue + "&";
+					}
 				}
+				if (jdbc.endsWith("&")){
+					int jdbcLength = jdbc.length();
+					jdbc.subSequence(0, jdbcLength - 1);
+				}
+				connection = DriverManager.getConnection(jdbc, _user, _passwd);
+				statement = connection.createStatement();
 			}
-			if (jdbc.endsWith("&")){
-				int jdbcLength = jdbc.length();
-				jdbc.subSequence(0, jdbcLength - 1);
-			}
-			connection = DriverManager.getConnection(jdbc, _user, _passwd);
-			statement = connection.createStatement();
 		}
 	}
 	
 	public void closeConnection() throws SQLException{
-		this.connection.close();
+		if (this.connection != null){
+			this.connection.close();			
+		}
 	}
 
 	public boolean valid(){
@@ -157,14 +160,12 @@ public class Database {
 	}
 
 	public void insert() throws SQLException{
-		
+
 		String table = model.getTable();
 		String insertSql = "INSERT INTO " + table;
 		String columnsSectionSql = "(";
 		String valueSectionSql = "VALUES(";
 		ArrayList columns = model.getColumnList();
-		
-		
 		
 		for (int i=0;i<columns.size();++i){
 			Column currentColumn = (Column) columns.get(i);
@@ -190,7 +191,7 @@ public class Database {
 		}
 
 		preparedStatement.executeUpdate();
-	
+
 	}
 	
 	public void update() throws SQLException{
@@ -231,7 +232,7 @@ public class Database {
 		
 		preparedStatement.setString(columns.size(), primaryValue);
 		preparedStatement.executeUpdate();
-
+		
 	}
 	
 	public void addSelectFilter(String columnName, String columnValue){
@@ -258,7 +259,7 @@ public class Database {
 	 }
 
 	public ResultSet select(Column[] columns) throws SQLException{
-		
+
 		String table = model.getTable();
 		String selectSql = "SELECT ";
 		for (int i=0; i<columns.length; ++i){
@@ -270,7 +271,7 @@ public class Database {
 		
 		for (int i=0;i<selectFilter.size();++i){
 			String[] columnInfo = selectFilter.get(i);
-			selectSql = selectSql + columnInfo[0] + " " + columnInfo[2] +" ? AND ";
+			selectSql = selectSql + columnInfo[0] + " " + columnInfo[2] + " ? AND ";
 		}
 
 		selectSql = removeAndOrCmd(selectSql);
