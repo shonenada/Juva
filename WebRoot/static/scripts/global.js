@@ -37,6 +37,7 @@
     vector.error  = function(message, timeout) { this._messagebox(message, timeout, 'error'); };
     
     vector.redirect = function(url){ document.location = baseurl + url ;};
+    vector.root = function(){ return baseurl;};
 
     window.vector = window.$S = vector;
 })(window, jQuery);

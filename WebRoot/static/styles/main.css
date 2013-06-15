@@ -111,3 +111,21 @@ body{
 .weibo-content{
     text-indent: 2em;
 }
+.weibo-content p{
+    margin: 0px 0px 0px;
+}
+.weibo-repost{
+    margin: 0px 0px 0px;
+    text-align: right;
+}
+
+.focus-btns{
+    font-size: 12px;
+}
+
+.weibo-comment-framework{
+    border: #aaa 1px solid;
+    margin: 0px 0px 10px;
+    display: none;
+    padding: 10px;
+}

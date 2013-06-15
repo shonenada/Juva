@@ -10,7 +10,6 @@
 
     <link rel="stylesheet" type="text/css" href="{{ url_prefix }}/static/styles/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="{{ url_prefix }}/static/styles/main.css">
-    <script type="text/javascript" src="{{ url_prefix }}/static/scripts/main.js"></script>
 </head>
 
 <body>
@@ -36,40 +35,13 @@
             </ul>
         </div>
         <div id="weibo" class="borad">
-            {% if is_current_user: %}
-            <div id="weibo-box">
-                <h4>发布微博</h4>
-                <form action="{{ url_prefix }}/weibo" method="post" id="weibo-form">
-                    <textarea name="weibo"></textarea>
-                    <input type="submit" class="btn btn-danger"/>
-                </form>
-            </div>
-            <h4>新微博</h4>
-            {% endif %}
-            {% if not_current_user: %}
-            <h4>{{ screenName }}的微博</h4>
-            {% endif %}
+            <h4>{{ screenName }}的关注</h4>
             <div class="line"></div>
-            {% if has_weibo: %}
-                {%for weibo in weibos: %}
-                    <a href="{{ url_prefix }}/weibo?user={{weibo.1}}">{{ weibo.1 }}</a> 在 {{ weibo.2 }} 说：<br />
-                    <div class="weibo-content"><p>{{ weibo.3 }}</p></div>
-                    <div class="weibo-repost">
-                        <a href="###" class="repost-btn" id="repost-btn-{{weibo.0}}">转发({{weibo.4}})</a>
-                        <a href="###" id="comment-btn-{{weibo.0}}" class="repost-btn">评论({{weibo.5}})</a>
-                    </div>
-                    <div class="weibo-comment-framework" id="comment-framework-{{weibo.0}}">
-                        <div class="weibo-comment-post">
-                            <form action="{{ url_prefix }}/comment" method="post" class="comment-form">
-                                <textarea name="comment"></textarea>
-                                <input type="hidden" value="{{weibo.0}}" name="aid" />
-                                <input type="submit" />
-                            </form>
-                        </div>
-                        <div class="weibo-comment" id="comment-{{weibo.0}}"></div>
-                    </div>
+            <ol>
+                {%for focus in focusList: %}
+                <li><a href="{{url_prefix}}/weibo?user={{focus.1}}">{{focus.1}}</a></li>
                 {%endfor%}
-            {% endif %}
+            </ol>
         </div>
     </div>
 
