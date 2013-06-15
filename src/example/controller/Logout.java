@@ -4,9 +4,9 @@ import java.sql.SQLException;
 
 import javax.servlet.http.Cookie;
 
+import example.settings;
 import example.auth.Roles;
 import example.model.User;
-import juva.Controller;
 import juva.rbac.PermissionTable.METHODS;
 
 public class Logout extends Controller{
@@ -19,11 +19,6 @@ public class Logout extends Controller{
 	
 	public Logout() throws Throwable{
 		super(URL_PATTERN);
-	}
-	
-	public void before() throws ClassNotFoundException, SQLException{
-		User temp = new User();
-		this.currentUser = temp.getCurrentUser(request);
 	}
 	
 	public void get() throws Throwable{
@@ -41,8 +36,8 @@ public class Logout extends Controller{
 	            }
 	        }
 	    }
-	    String url_prefix = (String) this.variables.get("url_prefix");
-	    response.sendRedirect(url_prefix + "/");
+
+	    response.sendRedirect(settings.URL_PREFIX + "/");
 	}
 
 }

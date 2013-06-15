@@ -1,10 +1,12 @@
 package example.controller;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import example.auth.Roles;
+import example.model.FocusProxy;
 import example.model.User;
-import juva.Controller;
+import example.model.UserProxy;
 import juva.Utils;
 import juva.rbac.PermissionTable.METHODS;
 
@@ -22,84 +24,102 @@ public class Focus extends Controller{
 		super(URL_PATTERN);
 	}
 	
-	public void before() throws ClassNotFoundException, SQLException{
-		User temp = new User();
-		this.currentUser = temp.getCurrentUser(request);
-	}
-	
 	public void get() throws Throwable{
 		
 	}
 	
 	public void post() throws Throwable{
-		String sUsername = (String) session.getAttribute("username");
-		String cUsername = (String) this.getCookies("username");
-		String username = sUsername != null ? sUsername : cUsername;
 		
-		User userModel = new User();
-		User user = userModel.getByUsername(username);
+		String screen = null;
+		String dst_id = null;
+		String user_id = null;
+		String is_hidden = null;
+
+		String email = this.getEmail();
+		
+		UserProxy userProxy = new UserProxy();
+		User user = userProxy.getByEmail(email);
+		User dst_user = null;
+		
 		if (user == null){
 			response.sendError(405, "Method Not Allow");
 			return ;
 		}
 		
-		String toid = request.getParameter("dst_id");
-		String is_hidden = request.getParameter("type");
-		is_hidden = (is_hidden != null) ? is_hidden : "0";
+		user_id = user.getValue("id");
+		screen = request.getParameter("dst_user");
+		is_hidden = (request.getParameter("type") == "1") ? "1" : "0";
 		
-		if (toid == null){
+		if (screen == null){
 			Utils.Json.json("false", "数据丢失！");
 			return ;
 		}
 		
-		example.model.Focus focus = new example.model.Focus();
-		focus.setValue("dst_id", toid);
-		focus.setValue("uid", user.getValue("id"));
-		focus.setValue("is_hidden", is_hidden);
-		focus.setValue("is_trash", "0");
-		focus.db.insert();
+		dst_user = userProxy.getByScreen(screen);
 		
-		Utils.Json.json("true", "操作成功");		
+		if (dst_user == null){
+			Utils.Json.json("false", "没有该用户");
+			return ;
+		}
+		
+		dst_id = dst_user.getValue("id");
+		
+		FocusProxy focusProxy = new FocusProxy();
+		example.model.Focus old_focus = focusProxy.getByIDs(user_id, dst_id);
+		if (old_focus != null && !old_focus.getValue("is_trash").equals("1")){
+			Utils.Json.json("false", "您已关注该用户!");
+			return ;
+		}
+		example.model.Focus focus = new example.model.Focus();
+		if (old_focus != null){
+			focus = old_focus;
+			focus.setValue("is_trash", "0");
+		}else{
+			focus.setValue("dst_id", dst_id);
+			focus.setValue("uid", user.getValue("id"));
+			focus.setValue("is_hidden", is_hidden);
+			focus.setValue("is_trash", "0");
+		}
+		focusProxy.setModel(focus);
+		focusProxy.db.insert();
 
+		Utils.Json.json("true", "操作成功");		
 	}
 	
 	public void delete() throws Throwable{
-		String sUsername = (String) session.getAttribute("username");
-		String cUsername = (String) this.getCookies("username");
-		String username = sUsername != null ? sUsername : cUsername;
-		User userModel = new User();
-		User user = userModel.getByUsername(username);
-		if (user == null){
-			response.sendError(405, "Method Not Allow");
-			return ;
-		}
+		String email = this.getEmail();
+		UserProxy userProxy = new UserProxy();
+		String uidInData = null;
+		User user = userProxy.getByEmail(email);
+		String user_id = user.getValue("id");
+		String focusId = this.request.getParameter("focusId");
 		
-		String cid = this.request.getParameter("cid");
-		if (cid == null){
+		if (focusId == null){
 			Utils.Json.json("false", "数据丢失！");
 			return ;
 		}
 
+		FocusProxy focusProxy = new FocusProxy();
+		example.model.Focus focus = (example.model.Focus)
+                                         focusProxy.find(focusId);
 
-		example.model.Focus focusModel = new example.model.Focus();
-		example.model.Focus focus;
-		focus = (example.model.Focus) focusModel.find(cid);
 		if (focus == null){
 			Utils.Json.json("false", "数据丢失！");
 			return ;
 		}
 		
-		String uidInData = focus.getValue("uid");
-		if ( !uidInData.equals(user.getValue("id"))){
+		uidInData = focus.getValue("uid");
+		
+		if ( !uidInData.equals(user_id)){
 			Utils.Json.json("false", "您无此权限");
 			return ;
 		}
 		
+		focusProxy.setModel(focus);
 		focus.setValue("is_trash", "1");
-		focus.db.update();
+		focusProxy.db.update();
 		
 		Utils.Json.json("true", "删除成功！");
-		
 	}
 
 }

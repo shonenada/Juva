@@ -1,13 +1,11 @@
 package example.controller;
 
-import java.security.NoSuchAlgorithmException;
-import java.sql.SQLException;
-
 import example.auth.Roles;
 import example.model.User;
-import juva.Controller;
+import example.model.UserProxy;
 import juva.Utils;
 import juva.rbac.PermissionTable.METHODS;
+
 
 public class Register extends Controller{
 	
@@ -30,11 +28,11 @@ public class Register extends Controller{
 			return ;
 		}
 		
-		String username = request.getParameter("username");
+		String email = request.getParameter("email");
 		String passwd = request.getParameter("passwd");
 		String screen = request.getParameter("screen");
 		
-		if (username == null || passwd == null){
+		if (email == null || passwd == null){
 			Utils.Json.json("false", "请输入帐号与密码");
 			return ;
 		}
@@ -44,26 +42,24 @@ public class Register extends Controller{
 			return ;
 		}
 
-		User userModel = new User();
-		
-		boolean isUserExist = userModel.isUsernameExist(username);
-		if (isUserExist){
+		UserProxy userProxy = new UserProxy();
+		boolean isEmailExist = userProxy.isEmailExist(email);
+		if (isEmailExist){
 			Utils.Json.json("false", "该邮箱存在，请换另一个。");
 			return ;
 		}
-		
-		boolean isScreenExist = userModel.isScreenExist(screen);
+		boolean isScreenExist = userProxy.isScreenExist(screen);
 		if (isScreenExist){
 			Utils.Json.json("false", "该昵称已存在，请换另一个。");
 			return ;
 		}
-		
 		String remoteIp = request.getRemoteAddr();
 		String currentTime = Utils.getCurrentTime();
 		String hashPasswd = Utils.MD5(passwd);
 		
+		
 		User user = new User();
-		user.setValue("user", username);
+		user.setValue("email", email);
 		user.setValue("passwd", hashPasswd);
 		user.setValue("screen", screen);
 		user.setValue("reg_ip", remoteIp);
@@ -71,8 +67,9 @@ public class Register extends Controller{
 		user.setValue("last_ip", remoteIp);
 		user.setValue("identity", "0");
 		user.setValue("is_trash", "0");
-
-		user.db.insert();
+		UserProxy newUser = new UserProxy(user);
+		newUser.connect();
+		newUser.db.insert();
 		
 		Utils.Json.json("true", "注册成功！");
 		

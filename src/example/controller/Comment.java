@@ -1,10 +1,15 @@
 package example.controller;
 
-import example.auth.Roles;
-import example.model.User;
-import juva.Controller;
+import java.sql.ResultSet;
+
 import juva.Utils;
 import juva.rbac.PermissionTable.METHODS;
+
+import example.auth.Roles;
+import example.model.CommentProxy;
+import example.model.User;
+import example.model.UserProxy;
+
 
 public class Comment extends Controller{
 	
@@ -20,45 +25,57 @@ public class Comment extends Controller{
 		super(URL_PATTERN);
 	}
 	
-	public void post() throws Throwable{
-		String sUsername = (String) session.getAttribute("username");
-		String cUsername = (String) this.getCookies("username");
-		String username = cUsername != null ? sUsername : cUsername;
-		User userModel = new User();
-		User user = userModel.getByUsername(username);
-		if (user == null){
-			response.sendError(405, "Method Not Allow");
-		}
-	
-		String aid = this.request.getParameter("wid");
-		String uid = user.getValue("id");
-		String content = this.request.getParameter("content");
-		if (aid == null || uid == null || content == null){
+	public void get() throws Throwable{
+		User email = (User) this.currentUser;
+		String article_id = this.request.getParameter("aid");
+		
+		if (article_id == null){
 			Utils.Json.json("false", "数据丢失！");
 		}
 		
+		CommentProxy commentProxy = new CommentProxy();
+		commentProxy.db.addSelectFilter("aid", article_id);
+		ResultSet rs = commentProxy.db.select();
+		String output = "";
+		while(rs.next()){
+			output += rs.getString("content");
+			output += "<br />";
+		}
+		if (output.equals("")){
+			output = "没有评论哦~";
+		}
+		
+		out.print(output);
+	}
+	
+	public void post() throws Throwable{
+		User user = (User) this.currentUser;
+	
+		String article_id = this.request.getParameter("aid");
+		String uid = user.getValue("id");
+		
+		String content = this.request.getParameter("comment");
+		if (article_id == null || uid == null || content == null){
+			Utils.Json.json("false", "数据丢失！");
+		}
+		
+		CommentProxy commentProxy = new CommentProxy();
+		
 		example.model.Comment comment = new example.model.Comment();
-		comment.setValue("aid", aid);
+		comment.setValue("aid", article_id);
 		comment.setValue("uid", uid);
 		comment.setValue("content", content);
 		comment.setValue("is_trash", "0");
 		
-		comment.db.insert();
+		commentProxy.setModel(comment);
+		commentProxy.db.insert();
 
 		Utils.Json.json("true", "发布成功！");
 		
 	}
 	
 	public void delete() throws Throwable{
-		String sUsername = (String) session.getAttribute("username");
-		String cUsername = (String) this.getCookies("username");
-		String username = cUsername != null ? sUsername : cUsername;
-		User userModel = new User();
-		User user = userModel.getByUsername(username);
-		if (user == null){
-			response.sendError(405, "Method Not Allow");
-			return ;
-		}
+		User user = (User) this.currentUser;
 		
 		String cid = this.request.getParameter("cid");
 		if (cid == null){
@@ -66,10 +83,9 @@ public class Comment extends Controller{
 			return ;
 		}
 
-
-		example.model.Comment commentModel = new example.model.Comment();
+		CommentProxy commentProxy = new CommentProxy();
 		example.model.Comment comment;
-		comment = (example.model.Comment) commentModel.find(cid);
+		comment = (example.model.Comment) commentProxy.find(cid);
 		if (comment == null){
 			Utils.Json.json("false", "数据丢失！");
 			return ;
@@ -82,10 +98,10 @@ public class Comment extends Controller{
 		}
 		
 		comment.setValue("is_trash", "1");
-		comment.db.update();
+		commentProxy.setModel(comment);
+		commentProxy.db.update();
 		
 		Utils.Json.json("true", "删除成功！");
-		
 	}
 	
 }

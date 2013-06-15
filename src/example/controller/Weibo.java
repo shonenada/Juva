@@ -1,12 +1,17 @@
 package example.controller;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
 
 import example.auth.Roles;
-import juva.Controller;
 import juva.Utils;
 import juva.rbac.PermissionTable.METHODS;
+import example.model.FocusProxy;
 import example.model.User;
+import example.model.UserProxy;
+import example.model.WeiboProxy;
 
 
 public class Weibo extends Controller{
@@ -23,20 +28,55 @@ public class Weibo extends Controller{
 		super(URL_PATTERN);
 	}
 	
-	public void before() throws ClassNotFoundException, SQLException{
-		User temp = new User();
-		this.currentUser = temp.getCurrentUser(request);
+	public void get() throws Throwable{
+		
+		User user = (User) this.currentUser;
+		String uid = user.getValue("id");
+		String nickname = user.getValue("screen");
+		
+		String screenName = request.getParameter("user");
+		User queryUser = userProxy.getByScreen(screenName);
+		
+	    boolean userIsNull = (queryUser == null);
+	    if (userIsNull){
+	    	out.println("用户没有找到！");
+	    	return;
+	    }
+	    
+	    String queryUserId = queryUser.getValue("id");
+	    putVar("screenName", screenName);
+
+	    weiboProxy.db.addSelectFilter("uid", queryUserId);
+	    int weibo_count = weiboProxy.count();
+	    
+	    ArrayList weiboList = weiboProxy.getWeiboList(queryUserId);
+	    
+	    int fans_count = focusProxy.getFansCount(queryUserId);
+	    int focus_count = focusProxy.getFocusCount(queryUserId);
+	    
+	    example.model.Focus isFocus = focusProxy.getByIDs(uid, queryUserId);
+	    if (isFocus != null || uid.equals(queryUserId)){
+	    	putFalseVar("not_focus");
+	    }
+	    if (weiboList.size() >0){
+			putTrueVar("has_weibo");
+		}else{
+			putFalseVar("has_weibo");
+		}
+		putFalseVar("is_current_user");
+		putTrueVar("not_current_user");
+	    putVar("weibo_count", weibo_count);
+		putVar("weibos", weiboList);
+		putVar("nickname", nickname);
+	    putVar("focus_count", focus_count);
+	    putVar("fans_count", fans_count);
+		
+	    render("main.html");
 	}
 	
 	public void post() throws Throwable{
-		String sUsername = (String) session.getAttribute("username");
-		String cUsername = (String) this.getCookies("username");
-		String username = sUsername != null ? sUsername : cUsername;
-		User userModel = new User();
-		User user = userModel.getByUsername(username);
-		if (user == null){
-			response.sendError(405, "Method Not Allow");
-		}
+		
+		User user = (User) this.currentUser;
 		
 		String weiboContent = this.request.getParameter("weibo");
 		if (weiboContent != null && weiboContent.length() < 1){
@@ -54,21 +94,15 @@ public class Weibo extends Controller{
 		weibo.setValue("aid", "0");
 		weibo.setValue("is_repost", "0");
 		weibo.setValue("is_trash", "0");
-		weibo.db.insert();
+		WeiboProxy weiboProxy = new WeiboProxy(weibo);
+		weiboProxy.db.insert();
 		
 		Utils.Json.json("true", "发布成功！");
 		
 	}
 	
 	public void delete() throws Throwable{
-		String sUsername = (String) session.getAttribute("username");
-		String cUsername = (String) this.getCookies("username");
-		String username = cUsername != null ? sUsername : cUsername;
-		User userModel = new User();
-		User user = userModel.getByUsername(username);
-		if (user == null){
-			response.sendError(405, "Method Not Allow");
-		}
+		User user = (User) this.currentUser;
 
 		String wid = this.request.getParameter("wid");
 		if (wid == null){
@@ -76,8 +110,8 @@ public class Weibo extends Controller{
 			return ;
 		}
 		
-		example.model.Weibo weiboModel = new example.model.Weibo();
-		example.model.Weibo weibo = (example.model.Weibo) weiboModel.find(wid);
+		WeiboProxy weiboProxy = new WeiboProxy();
+		example.model.Weibo weibo = (example.model.Weibo) weiboProxy.find(wid);
 		
 		if (weibo == null){
 			Utils.Json.json("false", "数据丢失！");
@@ -89,9 +123,9 @@ public class Weibo extends Controller{
 			return ;
 		}
 		
-	
+		weiboProxy.setModel(weibo);
 		weibo.setValue("is_trash", "1");
-		weibo.db.update();
+		weiboProxy.db.update();
 		
 		Utils.Json.json("true", "删除成功!");
 		
