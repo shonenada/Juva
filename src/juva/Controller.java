@@ -20,6 +20,7 @@ import javax.servlet.http.HttpSession;
 
 import juva.Exceptions.AuthenticateFailedException;
 import juva.database.Model;
+import juva.database.ModelProxy;
 import juva.rbac.PermissionTable;
 import juva.rbac.Resource;
 import juva.rbac.Role;
@@ -41,7 +42,10 @@ public class Controller extends HttpServlet {
 	protected Map<String, Object> variables = new HashMap<String, Object>();
 	protected juva.rbac.User currentUser;
 
-	protected PermissionTable permissionTable; 
+	protected PermissionTable permissionTable;
+	
+	protected ArrayList<ModelProxy> modelRegister;
+	
 	
 	public Controller() throws Throwable {
 		super();
@@ -69,9 +73,18 @@ public class Controller extends HttpServlet {
 	}
 	
 	public void before() throws Throwable{}
+	
+	public void after() throws Throwable{}
 
 	public void destroy() {
 		super.destroy();
+		for (int i=0;i<modelRegister.size();++i){
+			try {
+				modelRegister.get(i).db.closeConnection();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public void setContext(ServletContext context){
@@ -131,6 +144,7 @@ public class Controller extends HttpServlet {
 			this.before();
 			this.authenticate(PermissionTable.METHODS.GET);
 			this.get();
+			this.after();
 		}
 		catch (AuthenticateFailedException e) {
 			response.sendError(405, "Method Not Allow");
@@ -151,6 +165,7 @@ public class Controller extends HttpServlet {
 			this.before();
 			this.authenticate(PermissionTable.METHODS.POST);
 			this.post();
+			this.after();
 		}
 		catch (AuthenticateFailedException e) {
 			response.sendError(405, "Method Not Allow");
@@ -169,6 +184,7 @@ public class Controller extends HttpServlet {
 			this.before();
 			this.authenticate(PermissionTable.METHODS.PUT);
 			this.put();
+			this.after();
 		}
 		catch (AuthenticateFailedException e) {
 			response.sendError(405, "Method Not Allow");
@@ -187,6 +203,7 @@ public class Controller extends HttpServlet {
 			this.before();
 			this.authenticate(PermissionTable.METHODS.DELETE);
 			this.delete();
+			this.after();
 		}
 		catch (AuthenticateFailedException e) {
 			response.sendError(405, "Method Not Allow");

@@ -264,8 +264,14 @@ public class Template {
         	        String foundString =
                                matcher.group(0);
         	        String[] names = removeEtbrackets(foundString).split("\\.");
-        	        int index = Integer.parseInt(names[1]);
-        	        String replacement = (String) list.get(index);
+        	        String replacement = "";
+        	        if (names.length > 1){
+        	        	int index = Integer.parseInt(names[1]);
+            	        replacement = (String) list.get(index);
+        	        }
+        	        else{
+        	        	replacement = this.parseVar(foundString);
+        	        }
         	        temp = Utils.replaceAll(temp, foundString, replacement);
         	    }
     		}

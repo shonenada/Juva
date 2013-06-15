@@ -52,7 +52,6 @@ public class Juva extends HttpServlet {
 		Controller controller = makeController(uri);
 
 		if (controller != null){
-			controller.putVar("url_prefix", this.URL_PREFIX);
 			controller.setSession(request.getSession());
 			controller.doGet(request, response);
 		}else{
@@ -70,7 +69,6 @@ public class Juva extends HttpServlet {
 		Controller controller = makeController(uri);
 		
 		if (controller != null){
-			controller.putVar("url_prefix", this.URL_PREFIX);
 			controller.setSession(request.getSession());
 			controller.doPost(request, response);
 		}else{
@@ -88,7 +86,6 @@ public class Juva extends HttpServlet {
 		Controller controller = makeController(uri);
 		
 		if (controller != null){
-			controller.putVar("url_prefix", this.URL_PREFIX);
 			controller.setSession(request.getSession());
 			controller.doDelete(request, response);
 		}else{
@@ -106,7 +103,6 @@ public class Juva extends HttpServlet {
 		Controller controller = makeController(uri);
 		
 		if (controller != null){
-			controller.putVar("url_prefix", this.URL_PREFIX);
 			controller.setSession(request.getSession());
 			controller.doPut(request, response);
 		}else{
