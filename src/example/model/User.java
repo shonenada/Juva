@@ -3,16 +3,12 @@ package example.model;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
-import example.settings;
 import example.auth.Roles;
 
-import juva.Controller;
 import juva.database.Model;
 import juva.database.Column;
 import juva.rbac.Role;
+
 
 public class User extends Model implements juva.rbac.User{
 	
@@ -20,10 +16,11 @@ public class User extends Model implements juva.rbac.User{
 	// Identity 0 for localuser
 	// Identity 5 for administator
 
-	public User() throws ClassNotFoundException, SQLException {
-		super("accounts", settings.dbInfo);
+	public User()
+            throws ClassNotFoundException, SQLException {
+		super("accounts");
 		Column id = new Column("id", "int", 0, null, true);
-		Column user = new Column("user", "varchar", 50, null);
+		Column user = new Column("email", "varchar", 50, null);
 		Column passwd = new Column("passwd", "varchar", 128, null);
 		Column screen = new Column("screen", "varchar", 16, null);
 		Column created = new Column("created", "timestamp");
@@ -37,85 +34,10 @@ public class User extends Model implements juva.rbac.User{
 									   identity, is_trash});
 	}
 	
-	public User(ResultSet rs) throws ClassNotFoundException, SQLException{
+	public User(ResultSet rs)
+            throws ClassNotFoundException, SQLException{
 		this();
 		this.initModelByResultSet(rs);
-	}
-	
-	public User getByUsernameAndPasswd(String username, String passwd)
-	    	throws SQLException, ClassNotFoundException{
-		this.db.addSelectFilter("user", username);
-		this.db.addSelectFilter("passwd", passwd);
-		ResultSet rs = this.db.select();
-		if (rs.next()){
-			this.db.connect();
-			User user = new User(rs);
-			this.db.closeConnection();
-			return user;
-		}else{
-			this.db.connect();
-			this.db.closeConnection();
-			return null;
-		}
-	}
-	
-	public User getByUsername(String username)
-	        throws SQLException, ClassNotFoundException{
-		
-		this.db.clearSelectFilter();
-		
-		this.db.addSelectFilter("user", username);
-		ResultSet rs = this.db.select();
-		if (rs.next()){
-			this.db.connect();
-			User user = new User(rs);
-			this.db.closeConnection();
-			return user;
-		}else{
-			this.db.connect();
-			this.db.closeConnection();
-			return null;
-		}
-	}
-	
-	public boolean isScreenExist(String screen)
-			throws SQLException, ClassNotFoundException{
-		this.db.clearSelectFilter();
-		this.db.addSelectFilter("screen", screen);
-		this.db.connect();
-		ResultSet rs = this.db.select();
-		if (rs.next()){
-			return true;
-		}else{
-			return false;
-		}
-	}
-	
-	public boolean isUsernameExist(String username)
-    	throws SQLException, ClassNotFoundException{
-		User user = this.getByUsername(username);
-		if (user == null){
-			return false;
-		}
-		else{
-			return true;
-		}
-	}
-
-	@Override
-	public juva.rbac.User getCurrentUser(HttpServletRequest request)
-	        throws SQLException, ClassNotFoundException {
-		this.db.connect();
-		User user = null;
-		HttpSession session = request.getSession(true);
-		String sUsername = (String) session.getAttribute("username");
-		String cUsername = (String) Controller.getCookies("username", request);
-		String username = sUsername != null ? sUsername : cUsername;
-		if (username != null){
-			user = this.getByUsername(username);
-		}
-		this.db.closeConnection();
-	    return user;
 	}
 
 	@Override
@@ -133,5 +55,4 @@ public class User extends Model implements juva.rbac.User{
 			role = Roles.LocalUser;
 		return role;
 	}
-
 }

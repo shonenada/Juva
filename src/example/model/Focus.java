@@ -4,12 +4,13 @@ import java.sql.SQLException;
 
 import juva.database.Column;
 import juva.database.Model;
-import example.settings;
+
 
 public class Focus extends Model{
 	
-	public Focus () throws ClassNotFoundException, SQLException{
-		super("focus", settings.dbInfo);
+	public Focus ()
+            throws ClassNotFoundException, SQLException{
+		super("focus");
 		Column id = new Column("id", "int");
 		Column uid = new Column("uid", "int");
 		Column dst_id = new Column("dst_id", "int");
