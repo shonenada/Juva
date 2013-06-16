@@ -1,7 +1,5 @@
 package example.controller;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 import example.auth.Roles;
@@ -30,16 +28,15 @@ public class Focus extends Controller{
 		String nickname = user.getValue("screen");
 		String r_param = request.getParameter("user");
 		String screen = r_param != null ? r_param : user.getValue("screen");
-		String currentUserId = user.getValue("id");
-		
-		int weibo_count = weiboProxy.getWeiboCount(currentUserId);
-		int focus_count = focusProxy.getFocusCount(currentUserId);
-		int fans_count = focusProxy.getFansCount(currentUserId);
 		
 		User queryUser = userProxy.getByScreen(screen);
-		String uid = queryUser.getValue("id");
-		ArrayList focusList = focusProxy.getFocusList(uid);
+		String queryUserId = queryUser.getValue("id");
+		ArrayList focusList = focusProxy.getFocusList(queryUserId);
 	
+		int weibo_count = weiboProxy.getWeiboCount(queryUserId);
+		int focus_count = focusProxy.getFocusCount(queryUserId);
+		int fans_count = focusProxy.getFansCount(queryUserId);
+		
 		putVar("nickname", nickname);
 		putVar("screenName", screen);
 		putVar("focusList", focusList);
@@ -47,7 +44,7 @@ public class Focus extends Controller{
 		putVar("fans_count", fans_count);
 		putVar("focus_count", focus_count);
 		
-		render("focus.html");
+		render("focus_or_fans.html");
 	} 
 	
 	public void post() throws Throwable{

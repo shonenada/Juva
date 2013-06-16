@@ -90,7 +90,7 @@ public class WeiboProxy extends ModelProxy{
 		CommentProxy commentProxy = new CommentProxy();
 
 		FocusProxy focusProxy = new FocusProxy();
-		ResultSet allFocus = focusProxy.getByUid(uid);
+		ResultSet allFocus = focusProxy.getFocusByUid(uid);
 		
 		int focusCount = focusProxy.getFocusCount(uid);
 		String myFocus[] = new String[focusCount + 1];

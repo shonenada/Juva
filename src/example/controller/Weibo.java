@@ -44,16 +44,12 @@ public class Weibo extends Controller{
 	    }
 	    
 	    String queryUserId = queryUser.getValue("id");
-	    putVar("screenName", screenName);
 
-	    weiboProxy.db.clearSelectFilter();
-	    weiboProxy.db.addSelectFilter("uid", queryUserId);
-	    int weibo_count = weiboProxy.count();
-	    
-	    ArrayList weiboList = weiboProxy.getWeiboList(queryUserId);
-	    
 	    int fans_count = focusProxy.getFansCount(queryUserId);
 	    int focus_count = focusProxy.getFocusCount(queryUserId);
+	    int weibo_count = weiboProxy.getWeiboCount(queryUserId);
+	    
+	    ArrayList weiboList = weiboProxy.getWeiboList(queryUserId);
 	    
 	    example.model.Focus isFocus = focusProxy.getByIDs(uid, queryUserId);
 	    if (isFocus != null || uid.equals(queryUserId)){
@@ -72,6 +68,7 @@ public class Weibo extends Controller{
 	    putVar("weibo_count", weibo_count);
 		putVar("weibos", weiboList);
 		putVar("nickname", nickname);
+		putVar("screenName", screenName);
 		putVar("weibo_count", weibo_count);
 	    putVar("focus_count", focus_count);
 	    putVar("fans_count", fans_count);
