@@ -17,13 +17,13 @@ import example.settings;
 public class UserProxy extends ModelProxy {
 	
 	public UserProxy() throws ClassNotFoundException, SQLException{
-		super(settings.dbInfo);
+		super();
 		User userModel = new User();
 		this.setModel(userModel);
 	}
 	
 	public UserProxy(Model model) throws ClassNotFoundException, SQLException{
-		super(settings.dbInfo);
+		super();
 		this.setModel(model);
 	}
 	

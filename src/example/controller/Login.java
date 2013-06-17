@@ -45,6 +45,7 @@ public class Login extends Controller{
 		}
 		
 		UserProxy currentUserProxy = new UserProxy(user);
+		currentUserProxy.setDatabase(database);
 		String remoteIp = request.getRemoteAddr();
 		String currentTime = Utils.getCurrentTime();
 		user.setValue("last_ip", remoteIp);

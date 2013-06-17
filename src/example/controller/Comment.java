@@ -33,9 +33,7 @@ public class Comment extends Controller{
 			Utils.Json.json("false", "数据丢失！");
 		}
 		
-		CommentProxy commentProxy = new CommentProxy();
-		commentProxy.addSelectFilter("aid", article_id);
-		ResultSet rs = commentProxy.select();
+		ResultSet rs = commentProxy.getListByAid(article_id);
 		String output = "";
 		while(rs.next()){
 			output += rs.getString("content");
@@ -59,8 +57,6 @@ public class Comment extends Controller{
 			Utils.Json.json("false", "数据丢失！");
 		}
 		
-		CommentProxy commentProxy = new CommentProxy();
-		
 		example.model.Comment comment = new example.model.Comment();
 		comment.setValue("aid", article_id);
 		comment.setValue("uid", uid);
@@ -83,7 +79,6 @@ public class Comment extends Controller{
 			return ;
 		}
 
-		CommentProxy commentProxy = new CommentProxy();
 		example.model.Comment comment;
 		comment = (example.model.Comment) commentProxy.find(cid);
 		if (comment == null){

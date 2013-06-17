@@ -41,6 +41,7 @@ public class Fans extends Controller{
 		putVar("weibo_count", weibo_count);
 		putVar("fans_count", fans_count);
 		putVar("focus_count", focus_count);
+		putTrueVar("fans");
 		
 		render("focus_or_fans.html");
 	} 

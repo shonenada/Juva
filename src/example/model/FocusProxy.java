@@ -12,7 +12,7 @@ import example.settings;
 public class FocusProxy extends ModelProxy{
 	
 	public FocusProxy() throws ClassNotFoundException, SQLException{
-		super(settings.dbInfo);
+		super();
 		Focus focusModel = new Focus();
 		this.setModel(focusModel);
 	}
@@ -59,8 +59,10 @@ public class FocusProxy extends ModelProxy{
 	
 	public ArrayList getFocusList(String uid)
 	        throws Throwable{
-		ArrayList output = new ArrayList();
 		UserProxy userProxy = new UserProxy();
+		userProxy.setDatabase(this.db);
+		
+		ArrayList output = new ArrayList();
 		ResultSet focusSet = this.getFocusByUid(uid);
 		while (focusSet.next()){
 			ArrayList row = new ArrayList();
@@ -77,8 +79,10 @@ public class FocusProxy extends ModelProxy{
 	
 	public ArrayList getFansList(String uid)
     		throws Throwable{
-		ArrayList output = new ArrayList();
 		UserProxy userProxy = new UserProxy();
+		userProxy.setDatabase(this.db);
+		
+		ArrayList output = new ArrayList();
 		ResultSet focusSet = this.getFansByUid(uid);
 		while (focusSet.next()){
 			ArrayList row = new ArrayList();

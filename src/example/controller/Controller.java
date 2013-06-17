@@ -3,6 +3,8 @@ package example.controller;
 import java.io.IOException;
 import java.sql.SQLException;
 
+import juva.database.Database;
+
 import example.settings;
 import example.model.UserProxy;
 import example.model.WeiboProxy;
@@ -16,6 +18,7 @@ public class Controller extends juva.Controller{
 	protected UserProxy userProxy = new UserProxy();
 	protected FocusProxy focusProxy = new FocusProxy();
 	protected CommentProxy commentProxy = new CommentProxy();
+	protected Database database = new Database();
 
 	public Controller() throws Throwable {
 		super();
@@ -30,21 +33,22 @@ public class Controller extends juva.Controller{
 	}
 
 	public void before() throws ClassNotFoundException, SQLException{
+		database.setInfo(settings.dbInfo);
+		if (database.getConnection() == null)
+			database.connect();
+		
+		userProxy.setDatabase(database);
+		weiboProxy.setDatabase(database);
+		commentProxy.setDatabase(database);
+		focusProxy.setDatabase(database);
+		
 		this.currentUser = userProxy.getCurrentUser(request);
 		this.variables.clear();
 		putVar("url_prefix", settings.URL_PREFIX);
-		
-		userProxy.connect();
-		weiboProxy.connect();
-		commentProxy.connect();
-		focusProxy.connect();
 	}
 	
 	public void after() throws Throwable{
-//		weiboProxy.close();
-//		userProxy.close();
-//		commentProxy.close();
-//		focusProxy.close();
+//		database.closeConnection();
 	}
 	
 	public String getEmail(){

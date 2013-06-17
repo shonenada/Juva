@@ -14,14 +14,14 @@ import example.settings;
 public class WeiboProxy extends ModelProxy{
 	
 	public WeiboProxy() throws ClassNotFoundException, SQLException{
-		super(settings.dbInfo);
+		super();
 		Weibo weiboModel = new Weibo();
 		this.setModel(weiboModel);
 	}
 	
 	public WeiboProxy(Model model)
             throws ClassNotFoundException, SQLException{
-		super(settings.dbInfo);
+		super();
 		this.setModel(model);
 	}
 	
@@ -60,6 +60,11 @@ public class WeiboProxy extends ModelProxy{
 	public ArrayList getWeiboList(String uid)
             throws Throwable {
 		UserProxy userProxy = new UserProxy();
+    	CommentProxy commentProxy = new CommentProxy();
+    	
+    	userProxy.setDatabase(this.db);
+    	commentProxy.setDatabase(this.db);
+    	
 		ResultSet weiboRs = this.getAllWeiboByUid(uid);
 		User queryUser = (User) userProxy.find(uid);
 		String screenName = queryUser.getValue("screen");
@@ -68,9 +73,8 @@ public class WeiboProxy extends ModelProxy{
 	    	String wid = weiboRs.getString("id");
 	    	int repost_total = this.getRepostCount(wid);
 	    	ArrayList row = new ArrayList();
-	    	CommentProxy commentProxy = new CommentProxy();
+
 	    	int comment_total = commentProxy.getCount(wid);
-	    	
 			row.add(weiboRs.getString("id"));
 	    	row.add(screenName);
 	    	row.add(weiboRs.getString("created"));
@@ -87,8 +91,12 @@ public class WeiboProxy extends ModelProxy{
     		throws Throwable{
 		UserProxy userProxy = new UserProxy();
 		CommentProxy commentProxy = new CommentProxy();
-
 		FocusProxy focusProxy = new FocusProxy();
+		
+		userProxy.setDatabase(this.db);
+		commentProxy.setDatabase(this.db);
+		focusProxy.setDatabase(this.db);
+
 		ResultSet allFocus = focusProxy.getFocusByUid(uid);
 		
 		int focusCount = focusProxy.getFocusCount(uid);
@@ -120,7 +128,6 @@ public class WeiboProxy extends ModelProxy{
 				weiboList.add(row);
 			}
 		}
-		commentProxy.close();
 		return weiboList;
 	}
 	

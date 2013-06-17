@@ -43,6 +43,7 @@ public class Focus extends Controller{
 		putVar("weibo_count", weibo_count);
 		putVar("fans_count", fans_count);
 		putVar("focus_count", focus_count);
+		putTrueVar("focus");
 		
 		render("focus_or_fans.html");
 	} 
