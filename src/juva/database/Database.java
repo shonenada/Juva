@@ -42,7 +42,7 @@ public class Database {
 	Statement statement = null;
 	PreparedStatement preparedStatement = null;
 
-	public Database(Model model) throws ClassNotFoundException{
+	public Database() throws ClassNotFoundException{
 		Class.forName("com.mysql.jdbc.Driver");
 	}
 
@@ -78,7 +78,7 @@ public class Database {
 		this.setUser(info.get("user"));
 		this.setPasswd(info.get("passwd"));
 	}
-
+	
 	public void addArgument(String argName, String value){
 		Argument argument = new Argument(argName, value);
 		this._arguments.add(argument);
@@ -109,6 +109,10 @@ public class Database {
 				statement = connection.createStatement();
 			}
 		}
+	}
+	
+	public Connection getConnection(){
+		return this.connection;
 	}
 	
 	public void closeConnection() throws SQLException{

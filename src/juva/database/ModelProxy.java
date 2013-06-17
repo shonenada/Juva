@@ -17,20 +17,16 @@ public class ModelProxy {
 	protected ArrayList<String[]> selectFilter = new ArrayList<String[]>();
 	
 
-	public ModelProxy(Map<String, String> info)
-            throws SQLException, ClassNotFoundException{
-		this._info = info;
-		this.db = new Database(model);
-		this.db.setInfo(this._info);
-		this.db.connect();
+	public ModelProxy(){
+	}
+	
+	public void setDatabase(Database database){
+		this.db = database;
 	}
 	
 	public void setModel(Model model)
 	        throws ClassNotFoundException, SQLException {
 		this.model = model;
-		this.db = new Database(model);
-		this.db.setInfo(this._info);
-		this.db.connect();
 	}
 
 	public Database getDb(){
@@ -73,7 +69,6 @@ public class ModelProxy {
 		return total;
 	}
 	
-
 	// Operation
 	
 	public void setDesc(){
