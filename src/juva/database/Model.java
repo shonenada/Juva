@@ -14,6 +14,8 @@ import juva.Controller;
 public class Model {
 	
 	protected String _table;
+	protected Database database;
+	
 	
 	ArrayList columns = new ArrayList();
 	Map<Column, String> data = new HashMap<Column, String>();
