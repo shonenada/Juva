@@ -69,7 +69,7 @@ public class Register extends Controller{
 		user.setValue("is_trash", "0");
 		UserProxy newUser = new UserProxy(user);
 		newUser.connect();
-		newUser.db.insert();
+		newUser.insert();
 		
 		Utils.Json.json("true", "注册成功！");
 		

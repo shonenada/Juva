@@ -100,7 +100,7 @@ public class Focus extends Controller{
 			focus.setValue("is_trash", "0");
 		}
 		focusProxy.setModel(focus);
-		focusProxy.db.insert();
+		focusProxy.insert();
 
 		Utils.Json.json("true", "操作成功");		
 	}
@@ -136,7 +136,7 @@ public class Focus extends Controller{
 		
 		focusProxy.setModel(focus);
 		focus.setValue("is_trash", "1");
-		focusProxy.db.update();
+		focusProxy.update();
 		
 		Utils.Json.json("true", "删除成功！");
 	}

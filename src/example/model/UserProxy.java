@@ -29,10 +29,10 @@ public class UserProxy extends ModelProxy {
 	
 	public User getByEmailAndPasswd (String email, String passwd)
 	    	throws SQLException, ClassNotFoundException{
-		this.db.clearSelectFilter();
-		this.db.addSelectFilter("email", email);
-		this.db.addSelectFilter("passwd", passwd);
-		ResultSet rs = this.db.select();
+		this.clearSelectFilter();
+		this.addSelectFilter("email", email);
+		this.addSelectFilter("passwd", passwd);
+		ResultSet rs = this.select();
 		if (rs.next()){
 			User user = new User(rs);
 			return user;
@@ -43,9 +43,9 @@ public class UserProxy extends ModelProxy {
 	
 	public User getByScreen(String screen)
 	        throws SQLException, ClassNotFoundException{
-		this.db.clearSelectFilter();
-		this.db.addSelectFilter("screen", screen);
-		ResultSet rs = this.db.select();
+		this.clearSelectFilter();
+		this.addSelectFilter("screen", screen);
+		ResultSet rs = this.select();
 		if (rs.next()){
 			User user = new User(rs);
 			return user;
@@ -56,9 +56,9 @@ public class UserProxy extends ModelProxy {
 
 	public User getByEmail(String email)
 	        throws SQLException, ClassNotFoundException{
-		this.db.clearSelectFilter();
-		this.db.addSelectFilter("email", email);
-		ResultSet rs = this.db.select();
+		this.clearSelectFilter();
+		this.addSelectFilter("email", email);
+		ResultSet rs = this.select();
 		if (rs.next()){
 			User user = new User(rs);
 			return user;
@@ -69,9 +69,9 @@ public class UserProxy extends ModelProxy {
 
 	public boolean isScreenExist(String screen)
 			throws SQLException, ClassNotFoundException{
-		this.db.clearSelectFilter();
-		this.db.addSelectFilter("screen", screen);
-		ResultSet rs = this.db.select();
+		this.clearSelectFilter();
+		this.addSelectFilter("screen", screen);
+		ResultSet rs = this.select();
 		if (rs.next()){
 			return true;
 		}else{

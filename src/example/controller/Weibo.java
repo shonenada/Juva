@@ -97,7 +97,7 @@ public class Weibo extends Controller{
 		weibo.setValue("is_repost", "0");
 		weibo.setValue("is_trash", "0");
 		WeiboProxy weiboProxy = new WeiboProxy(weibo);
-		weiboProxy.db.insert();
+		weiboProxy.insert();
 		
 		Utils.Json.json("true", "发布成功！");
 		
@@ -127,7 +127,7 @@ public class Weibo extends Controller{
 		
 		weiboProxy.setModel(weibo);
 		weibo.setValue("is_trash", "1");
-		weiboProxy.db.update();
+		weiboProxy.update();
 		
 		Utils.Json.json("true", "删除成功!");
 		

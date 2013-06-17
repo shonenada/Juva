@@ -16,8 +16,8 @@ public class CommentProxy extends ModelProxy{
 	}
 	
 	public int getCount(String wid) throws SQLException{
-		this.db.clearSelectFilter();
-		this.db.addSelectFilter("aid", wid);
+		this.clearSelectFilter();
+		this.addSelectFilter("aid", wid);
 		return this.count();
 	}
 	

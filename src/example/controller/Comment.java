@@ -34,8 +34,8 @@ public class Comment extends Controller{
 		}
 		
 		CommentProxy commentProxy = new CommentProxy();
-		commentProxy.db.addSelectFilter("aid", article_id);
-		ResultSet rs = commentProxy.db.select();
+		commentProxy.addSelectFilter("aid", article_id);
+		ResultSet rs = commentProxy.select();
 		String output = "";
 		while(rs.next()){
 			output += rs.getString("content");
@@ -68,7 +68,7 @@ public class Comment extends Controller{
 		comment.setValue("is_trash", "0");
 		
 		commentProxy.setModel(comment);
-		commentProxy.db.insert();
+		commentProxy.insert();
 
 		Utils.Json.json("true", "发布成功！");
 		
@@ -99,7 +99,7 @@ public class Comment extends Controller{
 		
 		comment.setValue("is_trash", "1");
 		commentProxy.setModel(comment);
-		commentProxy.db.update();
+		commentProxy.update();
 		
 		Utils.Json.json("true", "删除成功！");
 	}

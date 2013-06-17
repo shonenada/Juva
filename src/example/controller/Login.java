@@ -49,7 +49,7 @@ public class Login extends Controller{
 		String currentTime = Utils.getCurrentTime();
 		user.setValue("last_ip", remoteIp);
 		user.setValue("last_log", currentTime);
-		currentUserProxy.db.update();
+		currentUserProxy.update();
 		
 		String lastIp = user.getValue("last_ip");
 		String lastLog = user.getValue("last_log");

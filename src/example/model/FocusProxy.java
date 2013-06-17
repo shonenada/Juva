@@ -19,10 +19,10 @@ public class FocusProxy extends ModelProxy{
 	
 	public Focus getByIDs(String src_id, String dst_id)
 	        throws Throwable{
-		this.db.clearSelectFilter();
-		this.db.addSelectFilter("uid", src_id);
-		this.db.addSelectFilter("dst_id", dst_id);
-		ResultSet focusRs = this.db.select();
+		this.clearSelectFilter();
+		this.addSelectFilter("uid", src_id);
+		this.addSelectFilter("dst_id", dst_id);
+		ResultSet focusRs = this.select();
 		if (focusRs.next()){
 			return (Focus) this.find(focusRs.getString("id"));
 		}
@@ -30,30 +30,30 @@ public class FocusProxy extends ModelProxy{
 	}
 	
 	public ResultSet getFocusByUid(String uid) throws SQLException{
-		this.db.clearSelectFilter();
-		this.db.addSelectFilter("uid", uid);
-		ResultSet focusRs = this.db.select();
+		this.clearSelectFilter();
+		this.addSelectFilter("uid", uid);
+		ResultSet focusRs = this.select();
 		return focusRs;
 	}
 	
 	public ResultSet getFansByUid(String uid) throws SQLException{
-		this.db.clearSelectFilter();
-		this.db.addSelectFilter("dst_id", uid);
-		ResultSet focusRs = this.db.select();
+		this.clearSelectFilter();
+		this.addSelectFilter("dst_id", uid);
+		ResultSet focusRs = this.select();
 		return focusRs;
 	}
 	
 	public int getFansCount(String uid) throws SQLException{
-		this.db.clearSelectFilter();
-	    this.db.addSelectFilter("dst_id", uid);
-	    this.db.addSelectFilter("is_hidden", "0");
+		this.clearSelectFilter();
+	    this.addSelectFilter("dst_id", uid);
+	    this.addSelectFilter("is_hidden", "0");
 	    return this.count();
 	}
 	
 	public int getFocusCount(String uid) throws SQLException{
-		this.db.clearSelectFilter();
-		this.db.addSelectFilter("uid", uid);
-		this.db.addSelectFilter("is_hidden", "0");
+		this.clearSelectFilter();
+		this.addSelectFilter("uid", uid);
+		this.addSelectFilter("is_hidden", "0");
 		return this.count();
 	}
 	
@@ -89,8 +89,6 @@ public class FocusProxy extends ModelProxy{
 			row.add(tempUserName);
 			output.add(row);
 		}
-		
 		return output;
-		}
-	
+	}
 }

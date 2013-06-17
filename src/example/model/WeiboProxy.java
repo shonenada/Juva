@@ -24,7 +24,6 @@ public class WeiboProxy extends ModelProxy{
 		super(settings.dbInfo);
 		this.setModel(model);
 	}
-
 	
 	public ResultSet friendWeibo(String[] friendList)
 	        throws SQLException{
@@ -32,29 +31,29 @@ public class WeiboProxy extends ModelProxy{
 		for (int i=0;i<friendList.length;++i){
 			selectSql += "uid = ? OR "; 
 		}
-		selectSql = this.db.removeAndOrCmd(selectSql);
+		selectSql = this.removeAndOrCmd(selectSql);
 		selectSql += " AND is_trash = 0 ORDER BY id DESC";
 		String[] columns = {"id", "content", "uid", "created",
 				            "is_repost", "aid"};
-		return this.db.querySelect(columns, selectSql, friendList);
+		return this.querySelect(columns, selectSql, friendList);
 	}
 	
 	public ResultSet getAllWeiboByUid(String uid) throws SQLException{
-		this.db.clearSelectFilter();
-		this.db.addSelectFilter("uid", uid);
-		return this.db.select();
+		this.clearSelectFilter();
+		this.addSelectFilter("uid", uid);
+		return this.select();
 	}
 	
 	public int getRepostCount(String wid) throws SQLException{
-		this.db.clearSelectFilter();
-		this.db.addSelectFilter("aid", wid);
-		this.db.addSelectFilter("is_repost", "1");
+		this.clearSelectFilter();
+		this.addSelectFilter("aid", wid);
+		this.addSelectFilter("is_repost", "1");
 		return this.count();
 	}
 	
 	public int getWeiboCount(String uid) throws SQLException{
-		this.db.clearSelectFilter();
-		this.db.addSelectFilter("uid", uid);
+		this.clearSelectFilter();
+		this.addSelectFilter("uid", uid);
 		return this.count();
 	}
 	
