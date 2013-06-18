@@ -142,5 +142,9 @@ public class Utils {
         output = replaceAll(output, "\"", "&#34;");
         return output;
     }
+    
+    public static String fixTime(String input){
+    	return input.substring(0, input.length()-2);
+    }
 
 }
