@@ -1,6 +1,7 @@
 package example.controller;
 
 import java.sql.ResultSet;
+import java.util.ArrayList;
 
 import juva.Utils;
 import juva.rbac.PermissionTable.METHODS;
@@ -33,17 +34,10 @@ public class Comment extends Controller{
 			Utils.Json.json("false", "数据丢失！");
 		}
 		
-		ResultSet rs = commentProxy.getListByAid(article_id);
-		String output = "";
-		while(rs.next()){
-			output += rs.getString("content");
-			output += "<br />";
-		}
-		if (output.equals("")){
-			output = "没有评论哦~";
-		}
+		ArrayList comments = commentProxy.getCommentByAid(article_id);
 		
-		out.print(output);
+		Utils.Json.json(comments);
+		return ;
 	}
 	
 	public void post() throws Throwable{
@@ -66,7 +60,7 @@ public class Comment extends Controller{
 		commentProxy.setModel(comment);
 		commentProxy.insert();
 
-		Utils.Json.json("true", "发布成功！");
+		Utils.Json.json(new String[]{"true", "发布成功！", article_id});
 		
 	}
 	

@@ -11,7 +11,7 @@ public class Weibo extends Model{
 	public Weibo()
             throws ClassNotFoundException, SQLException{
 		super("weibos");
-		Column id = new Column("id", "int");
+		Column id = new Column("id", "int", 0, null, true);
 		Column uid = new Column("uid", "int");
 		Column created = new Column("created", "timestamp");
 		Column content = new Column("content", "varchar", 140);

@@ -11,7 +11,7 @@ public class Focus extends Model{
 	public Focus ()
             throws ClassNotFoundException, SQLException{
 		super("focus");
-		Column id = new Column("id", "int");
+		Column id = new Column("id", "int", 0, null, true);
 		Column uid = new Column("uid", "int");
 		Column dst_id = new Column("dst_id", "int");
 		Column created = new Column("created", "timestamp");

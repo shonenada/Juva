@@ -11,7 +11,7 @@ public class Comment extends Model{
 	public Comment()
             throws ClassNotFoundException, SQLException {
 		super("comments");
-		Column id = new Column("id", "int");
+		Column id = new Column("id", "int", 0, null, true);
 		Column aid = new Column("aid", "int");
 		Column uid = new Column("uid", "int");
 		Column created = new Column("created", "timestamp");

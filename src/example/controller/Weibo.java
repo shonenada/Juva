@@ -1,5 +1,6 @@
 package example.controller;
 
+import java.io.BufferedReader;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -96,38 +97,42 @@ public class Weibo extends Controller{
 		weibo.setValue("aid", "0");
 		weibo.setValue("is_repost", "0");
 		weibo.setValue("is_trash", "0");
-		WeiboProxy weiboProxy = new WeiboProxy(weibo);
-		weiboProxy.insert();
+		WeiboProxy insert_weiboProxy = new WeiboProxy(weibo);
+		insert_weiboProxy.setDatabase(database);
+		insert_weiboProxy.insert();
 		
 		Utils.Json.json("true", "发布成功！");
 		
 	}
 	
 	public void delete() throws Throwable{
-		User user = (User) this.currentUser;
 
-		String wid = this.request.getParameter("wid");
-		if (wid == null){
+		BufferedReader dataReader = this.request.getReader();
+		String line = dataReader.readLine();
+		
+		String aid = line.replace("aid=", "");
+		if (aid == null){
 			Utils.Json.json("false", "数据丢失！");
 			return ;
 		}
 		
-		WeiboProxy weiboProxy = new WeiboProxy();
-		example.model.Weibo weibo = (example.model.Weibo) weiboProxy.find(wid);
+		example.model.Weibo weibo = (example.model.Weibo) weiboProxy.find(aid);
 		
 		if (weibo == null){
 			Utils.Json.json("false", "数据丢失！");
 			return ;
 		}
 		
-		if ( !weibo.getValue("uid").equals(user.getValue("id"))){
+		User user = (User) this.currentUser;
+		if (!weibo.getValue("uid").equals(user.getValue("id"))){
 			Utils.Json.json("false", "您无操作权限");
 			return ;
 		}
-		
-		weiboProxy.setModel(weibo);
+		WeiboProxy update_weibo = new WeiboProxy();
+		update_weibo.setDatabase(database);
+		update_weibo.setModel(weibo);
 		weibo.setValue("is_trash", "1");
-		weiboProxy.update();
+		update_weibo.update();
 		
 		Utils.Json.json("true", "删除成功!");
 		
