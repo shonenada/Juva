@@ -129,3 +129,11 @@ body{
     display: none;
     padding: 10px;
 }
+
+.comment-form{
+    margin: 0 0 0;
+}
+
+.comment-form textarea{
+    width: 400px;
+}

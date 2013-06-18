@@ -55,13 +55,14 @@
                     <a href="{{ url_prefix }}/weibo?user={{weibo.1}}">{{ weibo.1 }}</a> 在 {{ weibo.2 }} 说：<br />
                     <div class="weibo-content"><p>{{ weibo.3 }}</p></div>
                     <div class="weibo-repost">
+                        {{weibo.6}}
                         <a href="###" class="repost-btn" id="repost-btn-{{weibo.0}}">转发({{weibo.4}})</a>
                         <a href="###" id="comment-btn-{{weibo.0}}" class="repost-btn">评论({{weibo.5}})</a>
                     </div>
                     <div class="weibo-comment-framework" id="comment-framework-{{weibo.0}}">
                         <div class="weibo-comment-post">
-                            <form action="{{ url_prefix }}/comment" method="post" class="comment-form">
-                                <textarea name="comment"></textarea>
+                            <form action="{{ url_prefix }}/comment" method="post" class="comment-form" id="comment-form-{{ weibo.0 }}">
+                                <textarea name="comment" class=""></textarea>
                                 <input type="hidden" value="{{weibo.0}}" name="aid" />
                                 <input type="submit" />
                             </form>

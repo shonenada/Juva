@@ -35,7 +35,12 @@
             </ul>
         </div>
         <div id="weibo" class="borad">
+            {% if focus: %}
             <h4>{{ screenName }}的关注</h4>
+            {% endif %}
+            {% if fans: %}
+            <h4>{{ screenName }}的粉丝</h4>
+            {% endif %}            
             <div class="line"></div>
             <ol>
                 {%for focus in focusList: %}
