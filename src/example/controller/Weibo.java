@@ -41,7 +41,7 @@ public class Weibo extends Controller{
 	    boolean userIsNull = (queryUser == null);
 	    if (userIsNull){
 	    	out.println("用户没有找到！");
-	    	return;
+	    	return;	
 	    }
 	    
 	    String queryUserId = queryUser.getValue("id");

@@ -96,18 +96,20 @@ public class WeiboProxy extends ModelProxy{
 	    		del_html = "<a href='###' id='del-btn-" + aid +
 	    		           "' class='del-btn'>删除</a>";
 	    	}
+	    	String sendTime = Utils.fixTime(weiboRs.getString("created"));
+	    	String content = getParent(aid, weiboRs.getString("content"));
 	    	
 			row.add(aid);
 	    	row.add(screenName);
-	    	row.add(weiboRs.getString("created"));
-	    	row.add(weiboRs.getString("content"));
+	    	row.add(sendTime);
+	    	row.add(content);
 	    	row.add(repost_total+"");
 			row.add(comment_total+"");
 			row.add(del_html);
 			
 			weiboList.add(row);
 	    }
-	    // Collections.reverse(weiboList);
+	     Collections.reverse(weiboList);
 	    return weiboList;
 	}
 	
@@ -152,11 +154,12 @@ public class WeiboProxy extends ModelProxy{
 		    		del_html = "<a href='###' id='del-btn-" + aid +
  		                       "' class='del-btn'>删除</a>";
 		    	}
+		    	String content = getParent(aid, rs.getString("content"));
 		    	
 				row.add(aid);
 				row.add(friend.getValue("screen"));
 				row.add(created);
-				row.add(rs.getString("content"));
+				row.add(content);
 				row.add(repost_total+"");
 				row.add(comment_total+"");
 				row.add(del_html);
@@ -165,6 +168,27 @@ public class WeiboProxy extends ModelProxy{
 			}
 		}
 		return weiboList;
+	}
+	
+	private String getParent(String aid, String input) throws Throwable{
+		String content = input;
+    	Weibo current = (Weibo) this.find(aid);
+    	UserProxy userProxy = new UserProxy();
+    	userProxy.setDatabase(this.db);
+    	if (current.getValue("is_repost").equals("1")){
+    		Weibo parent = (Weibo) this.find(current.getValue("aid"));
+    		User sendUser = (User) userProxy.find(parent.getValue("uid"));
+    		String u_name = sendUser.getValue("screen");
+    		content += ("<div class='repost-weibo'><a href='" +
+    				    settings.URL_PREFIX + "/weibo?user=" + u_name +
+    				    "'>@" + u_name + "</a>: " +
+                        parent.getValue("content"));
+    		if (parent.getValue("is_repost").equals("1")){
+    			content = getParent(parent.getValue("id"), content);
+    		}
+    		content += "</div>";
+    	}
+    	return content;
 	}
 	
 }

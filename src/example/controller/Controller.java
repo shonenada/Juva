@@ -51,6 +51,10 @@ public class Controller extends juva.Controller{
 //		database.closeConnection();
 	}
 	
+	public void HandleAuthenticateFailedException() throws IOException{
+		response.sendRedirect(settings.URL_PREFIX + "/");
+	}
+	
 	public String getEmail(){
 		String s_email = (String) session.getAttribute("email");
 		String c_email = (String) this.getCookies("email");
