@@ -1,7 +1,24 @@
-
 $(function(){
 
   $('#weibo-form').ajaxForm({
+    dataType:'json',
+    success: function(response){
+      if (response.success == "true") {
+        $S.notice(response.message, 2000);
+        setTimeout(function(){
+          $S.redirect("main");
+        }, 2000);
+      }
+      else{
+        $S.alert(response.message, 5000);
+      }
+    },
+    error: function() {
+      $S.error('发生技术问题，导致你的报名失败。请联系管理员！');
+    }
+  });
+
+  $('.repost-form').ajaxForm({
     dataType:'json',
     success: function(response){
       if (response.success == "true") {
@@ -86,9 +103,35 @@ $(function(){
     });
   };
 
+  var focus = function(username, type){
+    $.ajax({
+      url: $S.root() + "focus",
+      type: 'post',
+      async: true ,
+      dataType: 'json',
+      data: {"dst_user": username, "type": type},
+      success:function(response){
+        if (response.success == "true") {
+          $S.notice(response.message, 1000);
+        }
+        else{
+          $S.alert(response.message, 5000);
+        }
+      },
+      error: function(){
+        $S.error('发生技术问题，导致你的报名失败。请联系管理员！');
+      }
+    });
+  };
+
   $("#focus-btn").click(function(){
     var user_name = $("#focus-btn").attr("href").replace("#", "");
-    $.post($S.root() + "focus", {'dst_user': user_name});
+    focus(user_name, "show");
+  });
+
+  $("#h-focus-btn").click(function(){
+    var user_name = $("#focus-btn").attr("href").replace("#", "");
+    focus(user_name, "hidden");
   });
 
   $(".del-btn").click(function(){
@@ -96,9 +139,20 @@ $(function(){
     del_weibo(aid);
   });
 
-  $(".repost-btn").click(function(){
+  $(".comment-btn").click(function(){
     var aid = $(this).attr("id").replace("comment-btn-", "");
     get_comment(aid);
     $("#comment-framework-" + aid).slideToggle();
+  });
+
+  $(".repost-btn").click(function(){
+    var aid = $(this).attr("id").replace("repost-btn-", "");
+    $(".repost-content").val("");
+    $(".repost-framework").hide();
+    $("#repost-framework-" + aid).fadeIn("fast");
+  });
+
+  $(".repost-cancel-btn").click(function(){
+    $(".repost-framework").fadeOut();
   });
 });

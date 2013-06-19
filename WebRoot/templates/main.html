@@ -58,7 +58,7 @@
                     <div class="weibo-repost">
                         {{weibo.6}}
                         <a href="###" class="repost-btn" id="repost-btn-{{weibo.0}}">转发({{weibo.4}})</a>
-                        <a href="###" id="comment-btn-{{weibo.0}}" class="repost-btn">评论({{weibo.5}})</a>
+                        <a href="###" id="comment-btn-{{weibo.0}}" class="comment-btn">评论({{weibo.5}})</a>
                     </div>
                     <div class="weibo-comment-framework" id="comment-framework-{{weibo.0}}">
                         <div class="weibo-comment-post">
@@ -69,6 +69,15 @@
                             </form>
                         </div>
                         <div class="weibo-comment" id="comment-{{weibo.0}}"></div>
+                    </div>
+                    <div id="repost-framework-{{weibo.0}}" class="repost-framework">
+                        <p>转发：<code>{{weibo.3}} -- {{weibo.1}}</code></p>
+                        <form id="repost-form-{{weibo.0}}" class="repost-form" method="post" action="{{url_prefix}}/repost">
+                            <input type="hidden" value="{{weibo.0}}" name="aid" />
+                            <textarea name="repost" id="repost-content-{{weibo.0}}" class="repost-content"></textarea><br />
+                            <input type="submit" value="转发" class="btn btn-danger" />
+                            <input type="button" class="repost-cancel-btn btn btn-primary" value="取消" />
+                        </form>
                     </div>
                 </div>
                 {%endfor%}

@@ -109,7 +109,7 @@ body{
 }
 
 .weibo-content{
-    text-indent: 2em;
+    text-indent: 1em;
 }
 .weibo-content p{
     margin: 0px 0px 0px;
@@ -136,4 +136,29 @@ body{
 
 .comment-form textarea{
     width: 400px;
+}
+
+.repost-framework{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin-left: -100px;
+    margin-top: -90px;
+    border: 1px solid #aaa;
+    min-height: 180px;
+    width: 300px;
+    background: #fff;
+    display: none;
+    padding: 10px;
+    overflow: auto;
+}
+
+.repost-form textarea{
+    width: 270px;
+    height: 90px;
+}
+
+.repost-weibo{
+    border: 1px solid #0f0f0f;
+    padding:3px;
 }
