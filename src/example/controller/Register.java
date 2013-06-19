@@ -42,7 +42,6 @@ public class Register extends Controller{
 			return ;
 		}
 
-		UserProxy userProxy = new UserProxy();
 		boolean isEmailExist = userProxy.isEmailExist(email);
 		if (isEmailExist){
 			Utils.Json.json("false", "该邮箱存在，请换另一个。");
@@ -68,7 +67,7 @@ public class Register extends Controller{
 		user.setValue("identity", "0");
 		user.setValue("is_trash", "0");
 		UserProxy newUser = new UserProxy(user);
-		newUser.connect();
+		newUser.setDatabase(database);
 		newUser.insert();
 		
 		Utils.Json.json("true", "注册成功！");
