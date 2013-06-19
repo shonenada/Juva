@@ -45,6 +45,7 @@ public class ModelProxy {
 		Model output = this.model.getClass().newInstance();
 		output._table = this.model._table;
 		output.columns = this.model.columns;
+		this.clearSelectFilter();
 		this.addSelectFilter("id", id);
 		ArrayList columns = output.getColumnList();
 		ResultSet first = this.select();

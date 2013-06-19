@@ -75,6 +75,10 @@ public class Controller extends HttpServlet {
 	public void before() throws Throwable{}
 	
 	public void after() throws Throwable{}
+	
+	public void HandleAuthenticateFailedException() throws IOException{
+		response.sendError(405, "Method Not Allow");
+	}
 
 	public void destroy() {
 		super.destroy();
@@ -147,7 +151,7 @@ public class Controller extends HttpServlet {
 			this.after();
 		}
 		catch (AuthenticateFailedException e) {
-			response.sendError(405, "Method Not Allow");
+			HandleAuthenticateFailedException();
 		}
 		catch (Throwable e) {
 			// TODO log this message.
@@ -168,7 +172,7 @@ public class Controller extends HttpServlet {
 			this.after();
 		}
 		catch (AuthenticateFailedException e) {
-			response.sendError(405, "Method Not Allow");
+			HandleAuthenticateFailedException();
 		} catch (Throwable e) {
 			// TODO log this message.
 			response.sendError(500);
@@ -187,7 +191,7 @@ public class Controller extends HttpServlet {
 			this.after();
 		}
 		catch (AuthenticateFailedException e) {
-			response.sendError(405, "Method Not Allow");
+			HandleAuthenticateFailedException();
 		} catch (Throwable e) {
 			// TODO log this message.
 			response.sendError(500);
@@ -206,7 +210,7 @@ public class Controller extends HttpServlet {
 			this.after();
 		}
 		catch (AuthenticateFailedException e) {
-			response.sendError(405, "Method Not Allow");
+			HandleAuthenticateFailedException();
 		} catch (Throwable e) {
 			// TODO log this message.
 			response.sendError(500);
