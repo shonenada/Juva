@@ -45,9 +45,14 @@ public class Weibo extends Controller{
 	    }
 	    
 	    String queryUserId = queryUser.getValue("id");
+	    
+	    String hidden = "0";
+	    if (queryUserId.equals(uid)){
+	    	hidden = null;
+	    }
 
 	    int fans_count = focusProxy.getFansCount(queryUserId);
-	    int focus_count = focusProxy.getFocusCount(queryUserId);
+	    int focus_count = focusProxy.getFocusCount(queryUserId, hidden);
 	    int weibo_count = weiboProxy.getWeiboCount(queryUserId);
 	    
 	    ArrayList weiboList = weiboProxy.getWeiboList(queryUserId, uid);
