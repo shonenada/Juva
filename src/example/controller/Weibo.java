@@ -50,7 +50,7 @@ public class Weibo extends Controller{
 	    int focus_count = focusProxy.getFocusCount(queryUserId);
 	    int weibo_count = weiboProxy.getWeiboCount(queryUserId);
 	    
-	    ArrayList weiboList = weiboProxy.getWeiboList(queryUserId);
+	    ArrayList weiboList = weiboProxy.getWeiboList(queryUserId, uid);
 	    
 	    example.model.Focus isFocus = focusProxy.getByIDs(uid, queryUserId);
 	    if (isFocus != null || uid.equals(queryUserId)){

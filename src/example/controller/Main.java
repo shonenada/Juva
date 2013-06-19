@@ -30,16 +30,18 @@ public class Main extends Controller{
 		String user_nickname = user.getValue("screen");
 
 		int weibo_count = weiboProxy.getWeiboCount(uid);
-		int focus_count = focusProxy.getFocusCount(uid);
+		
+		// null means do not add hidden selecting filter.
+		int focus_count = focusProxy.getFocusCount(uid, null);
 		int fans_count = focusProxy.getFansCount(uid);
-		ArrayList weiboList = weiboProxy.getFocusWeiboList(uid);
+		
+		ArrayList weiboList = weiboProxy.getFocusWeiboList(uid, null);
 
 		if (weiboList.size()>0){
 			putTrueVar("has_weibo");
 		}else{
 			putFalseVar("has_weibo");
 		}
-		
 		putVar("weibos", weiboList);
 		putTrueVar("is_current_user");
 		putFalseVar("not_current_user");

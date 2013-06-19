@@ -30,40 +30,65 @@ public class FocusProxy extends ModelProxy{
 	}
 	
 	public ResultSet getFocusByUid(String uid) throws SQLException{
-		this.clearSelectFilter();
-		this.addSelectFilter("uid", uid);
-		ResultSet focusRs = this.select();
-		return focusRs;
+		return getFocusByUid(uid, "0");
 	}
 	
-	public ResultSet getFansByUid(String uid) throws SQLException{
-		this.clearSelectFilter();
-		this.addSelectFilter("dst_id", uid);
-		ResultSet focusRs = this.select();
-		return focusRs;
+	public ResultSet getFansByUid(String uid) 
+    throws SQLException{
+		return getFansByUid(uid, "0");
 	}
 	
 	public int getFansCount(String uid) throws SQLException{
-		this.clearSelectFilter();
-	    this.addSelectFilter("dst_id", uid);
-	    this.addSelectFilter("is_hidden", "0");
-	    return this.count();
+		return getFansCount(uid, "0");
 	}
 	
 	public int getFocusCount(String uid) throws SQLException{
+		return getFocusCount(uid, "0");
+	}
+	
+	public ResultSet getFocusByUid(String uid, String hidden) 
+	        throws SQLException{
 		this.clearSelectFilter();
 		this.addSelectFilter("uid", uid);
-		this.addSelectFilter("is_hidden", "0");
+		if (hidden != null)
+			this.addSelectFilter("is_hidden", hidden);
+		ResultSet focusRs = this.select();
+		return focusRs;
+	}
+	
+	public ResultSet getFansByUid(String uid, String hidden) 
+	        throws SQLException{
+		this.clearSelectFilter();
+		this.addSelectFilter("dst_id", uid);
+		if (hidden != null)
+			this.addSelectFilter("is_hidden", hidden);
+		ResultSet focusRs = this.select();
+		return focusRs;
+	}
+	
+	public int getFansCount(String uid, String hidden) throws SQLException{
+		this.clearSelectFilter();
+	    this.addSelectFilter("dst_id", uid);
+	    if (hidden != null)
+	    	this.addSelectFilter("is_hidden", hidden);
+	    return this.count();
+	}
+	
+	public int getFocusCount(String uid, String hidden) throws SQLException{
+		this.clearSelectFilter();
+		this.addSelectFilter("uid", uid);
+		if (hidden != null)
+			this.addSelectFilter("is_hidden", hidden);
 		return this.count();
 	}
 	
-	public ArrayList getFocusList(String uid)
+	public ArrayList getFocusList(String uid, String hidden)
 	        throws Throwable{
 		UserProxy userProxy = new UserProxy();
 		userProxy.setDatabase(this.db);
 		
 		ArrayList output = new ArrayList();
-		ResultSet focusSet = this.getFocusByUid(uid);
+		ResultSet focusSet = this.getFocusByUid(uid, hidden);
 		while (focusSet.next()){
 			ArrayList row = new ArrayList();
 			User tempUser = (User) userProxy.find(focusSet.getString("dst_id"));

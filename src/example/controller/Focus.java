@@ -24,17 +24,21 @@ public class Focus extends Controller{
 	}
 	
 	public void get() throws Throwable{
+		
 		User user = (User) this.currentUser;
 		String nickname = user.getValue("screen");
 		String r_param = request.getParameter("user");
-		String screen = r_param != null ? r_param : user.getValue("screen");
+		User queryUser = (r_param != null ?
+				          userProxy.getByScreen(r_param) : user);
+		String screen = queryUser.getValue("screen");
+		String hidden = (user.getValue("id").equals(queryUser.getValue("id")) ?
+                         null : "0");
 		
-		User queryUser = userProxy.getByScreen(screen);
 		String queryUserId = queryUser.getValue("id");
-		ArrayList focusList = focusProxy.getFocusList(queryUserId);
+		ArrayList focusList = focusProxy.getFocusList(queryUserId, hidden);
 	
 		int weibo_count = weiboProxy.getWeiboCount(queryUserId);
-		int focus_count = focusProxy.getFocusCount(queryUserId);
+		int focus_count = focusProxy.getFocusCount(queryUserId, hidden);
 		int fans_count = focusProxy.getFansCount(queryUserId);
 		
 		putVar("nickname", nickname);
@@ -57,7 +61,6 @@ public class Focus extends Controller{
 
 		String email = this.getEmail();
 		
-		UserProxy userProxy = new UserProxy();
 		User user = userProxy.getByEmail(email);
 		User dst_user = null;
 		
@@ -68,7 +71,7 @@ public class Focus extends Controller{
 		
 		user_id = user.getValue("id");
 		screen = request.getParameter("dst_user");
-		is_hidden = (request.getParameter("type") == "1") ? "1" : "0";
+		is_hidden = (request.getParameter("type").equals("hidden")) ? "1" : "0";
 		
 		if (screen == null){
 			Utils.Json.json("false", "数据丢失！");
@@ -84,7 +87,6 @@ public class Focus extends Controller{
 		
 		dst_id = dst_user.getValue("id");
 		
-		FocusProxy focusProxy = new FocusProxy();
 		example.model.Focus old_focus = focusProxy.getByIDs(user_id, dst_id);
 		if (old_focus != null && old_focus.getValue("is_trash").equals("0")){
 			Utils.Json.json("false", "您已关注该用户!");

@@ -22,17 +22,22 @@ public class Fans extends Controller{
 	}
 	
 	public void get() throws Throwable{
+		
 		User user = (User) this.currentUser;
 		String nickname = user.getValue("screen");
 		String r_param = request.getParameter("user");
-		String screen = r_param != null ? r_param : user.getValue("screen");
+		User queryUser = (r_param != null ?
+		                  userProxy.getByScreen(r_param) : user);
+		String screen = queryUser.getValue("screen");
+		String hidden = (user.getValue("id").equals(queryUser.getValue("id")) ?
+						 null : "0");
 		
-		User queryUser = userProxy.getByScreen(screen);
 		String queryUserId = queryUser.getValue("id");
+		
 		ArrayList focusList = focusProxy.getFansList(queryUserId);
 	
 		int weibo_count = weiboProxy.getWeiboCount(queryUserId);
-		int focus_count = focusProxy.getFocusCount(queryUserId);
+		int focus_count = focusProxy.getFocusCount(queryUserId, hidden);
 		int fans_count = focusProxy.getFansCount(queryUserId);
 		
 		putVar("nickname", nickname);

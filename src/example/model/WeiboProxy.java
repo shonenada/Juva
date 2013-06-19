@@ -66,7 +66,7 @@ public class WeiboProxy extends ModelProxy{
 		return this.count();
 	}
 	
-	public ArrayList getWeiboList(String uid)
+	public ArrayList getWeiboList(String uid, String current_id)
             throws Throwable {
 		UserProxy userProxy = new UserProxy();
     	CommentProxy commentProxy = new CommentProxy();
@@ -79,21 +79,23 @@ public class WeiboProxy extends ModelProxy{
 		String screenName = queryUser.getValue("screen");
 	    ArrayList<ArrayList<String> > weiboList =
             new ArrayList<ArrayList<String> >();
+
+    	// not elegant!
+    	String del_html = "";
+    	
 	    while (weiboRs.next()){
 	    	String wid = weiboRs.getString("id");
 	    	ArrayList<String> row = new ArrayList<String>();
 	    	
 	    	String aid = weiboRs.getString("id");
-
-	    	// not elegant!
-	    	String del_html = "";
-	    	if (weiboRs.getString("uid").equals(uid)){
-	    		del_html = "<a href='###' id='del-btn-" + aid +
-	    		           "' class='del-btn'>删除</a>";
-	    	}
 	    	
 	    	int repost_total = this.getRepostCount(wid);
 	    	int comment_total = commentProxy.getCount(wid);
+	    	
+	    	if (uid.equals(current_id)){
+	    		del_html = "<a href='###' id='del-btn-" + aid +
+	    		           "' class='del-btn'>删除</a>";
+	    	}
 	    	
 			row.add(aid);
 	    	row.add(screenName);
@@ -109,7 +111,7 @@ public class WeiboProxy extends ModelProxy{
 	    return weiboList;
 	}
 	
-	public ArrayList getFocusWeiboList(String uid)
+	public ArrayList getFocusWeiboList(String uid, String hidden)
     		throws Throwable{
 		UserProxy userProxy = new UserProxy();
 		CommentProxy commentProxy = new CommentProxy();
@@ -119,9 +121,10 @@ public class WeiboProxy extends ModelProxy{
 		commentProxy.setDatabase(this.db);
 		focusProxy.setDatabase(this.db);
 
-		ResultSet allFocus = focusProxy.getFocusByUid(uid);
+		ResultSet allFocus = focusProxy.getFocusByUid(uid, hidden);
 		
-		int focusCount = focusProxy.getFocusCount(uid);
+		int focusCount = focusProxy.getFocusCount(uid, hidden);
+		
 		String myFocus[] = new String[focusCount + 1];
 		while(allFocus.next()){
 			myFocus[focusCount--] = allFocus.getString("dst_id");
