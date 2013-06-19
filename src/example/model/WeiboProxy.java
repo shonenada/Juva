@@ -47,6 +47,7 @@ public class WeiboProxy extends ModelProxy{
 	public ResultSet getAllWeiboByUid(String uid) throws SQLException{
 		this.clearSelectFilter();
 		this.addSelectFilter("uid", uid);
+		this.addSelectFilter("is_trash", "0");
 		return this.select();
 	}
 	
@@ -54,12 +55,14 @@ public class WeiboProxy extends ModelProxy{
 		this.clearSelectFilter();
 		this.addSelectFilter("aid", wid);
 		this.addSelectFilter("is_repost", "1");
+		this.addSelectFilter("is_trash", "0");
 		return this.count();
 	}
 	
 	public int getWeiboCount(String uid) throws SQLException{
 		this.clearSelectFilter();
 		this.addSelectFilter("uid", uid);
+		this.addSelectFilter("is_trash", "0");
 		return this.count();
 	}
 	
@@ -81,11 +84,12 @@ public class WeiboProxy extends ModelProxy{
 	    	ArrayList<String> row = new ArrayList<String>();
 	    	
 	    	String aid = weiboRs.getString("id");
-	    	
+
 	    	// not elegant!
 	    	String del_html = "";
-	    	if (weiboRs.getString("uid") == uid){
-	    		del_html = "<a href='"+ settings.URL_PREFIX +"/weibo/del?aid="+aid+"'>删除</a>"; 
+	    	if (weiboRs.getString("uid").equals(uid)){
+	    		del_html = "<a href='###' id='del-btn-" + aid +
+	    		           "' class='del-btn'>删除</a>";
 	    	}
 	    	
 	    	int repost_total = this.getRepostCount(wid);
@@ -142,7 +146,8 @@ public class WeiboProxy extends ModelProxy{
 		    	// not elegant!
 		    	String del_html = "";
 		    	if (rs.getString("uid").equals(uid)){
-		    		del_html = "<a href='#"+aid+"' class='del-btn'>删除</a>";
+		    		del_html = "<a href='###' id='del-btn-" + aid +
+ 		                       "' class='del-btn'>删除</a>";
 		    	}
 		    	
 				row.add(aid);

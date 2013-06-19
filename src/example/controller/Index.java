@@ -2,7 +2,9 @@ package example.controller;
 
 import juva.rbac.PermissionTable.METHODS;
 
+import example.settings;
 import example.auth.Roles;
+import example.model.User;
 
 
 public class Index extends Controller {
@@ -21,6 +23,10 @@ public class Index extends Controller {
 	}
 
 	public void get() throws Throwable{
+		User user = (User) this.currentUser;
+		if (user != null){
+			response.sendRedirect(settings.URL_PREFIX + "/main");
+		}
 		String test = request.getParameter("test");
 		String random = (String) session.getAttribute("randomString");
 		putVar("site_name", "Juva");
