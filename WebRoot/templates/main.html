@@ -52,6 +52,7 @@
             <div class="line"></div>
             {% if has_weibo: %}
                 {%for weibo in weibos: %}
+                <div id="weibo-{{weibo.0}}">
                     <a href="{{ url_prefix }}/weibo?user={{weibo.1}}">{{ weibo.1 }}</a> 在 {{ weibo.2 }} 说：<br />
                     <div class="weibo-content"><p>{{ weibo.3 }}</p></div>
                     <div class="weibo-repost">
@@ -69,6 +70,7 @@
                         </div>
                         <div class="weibo-comment" id="comment-{{weibo.0}}"></div>
                     </div>
+                </div>
                 {%endfor%}
             {% endif %}
         </div>

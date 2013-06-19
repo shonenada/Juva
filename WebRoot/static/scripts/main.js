@@ -73,10 +73,8 @@ $(function(){
       data: {"aid": aid},
       success:function(response){
         if (response.success == "true") {
-          $S.notice(response.message, 2000);
-          setTimeout(function(){
-            $S.redirect("main");
-          }, 2000);
+          $S.notice(response.message, 500);
+          $("#weibo-"+aid).slideUp();
         }
         else{
           $S.alert(response.message, 5000);
@@ -94,7 +92,7 @@ $(function(){
   });
 
   $(".del-btn").click(function(){
-    var aid = $(this).attr("href").replace("#", "");
+    var aid = $(this).attr("id").replace("del-btn-", "");
     del_weibo(aid);
   });
 
