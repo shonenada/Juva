@@ -20,6 +20,7 @@
                 <li class="current"><a href="{{ url_prefix }}/main">主页</a></li>
                 <li><a href="{{ url_prefix }}/focus">我的关注</a></li>
                 <li><a href="{{ url_prefix }}/fans">我的粉丝</a></li>
+                <li><a href="{{ url_prefix }}/users">最近加入</a></li>
             </ul>
             <span class="right">欢迎您，{{ nickname }}。<a href="{{ url_prefix}}/logout">注销</a></span>
         </div>
@@ -27,7 +28,7 @@
 
     <div id="main" class="content">
         <div id="person" class="borad">
-            <h4>{{ screenName }} {% if not_focus: %}<span class="focus-btns"><a href="#{{ screenName }}" id="focus-btn">(关注)</a>/<a href="#{{ screenName }}" id="h-focus-btn">(悄悄关注)</a></span>{% endif %}</h4>
+            <h4>{{ screenName }} {% if not_focus: %}<span class="focus-btns"><a href="#{{ screenName }}" ="focus-btn">(关注)</a>/<a href="#{{ screenName }}" id="h-focus-btn">(悄悄关注)</a></span>{% endif %}</h4>
             <div class="line"></div>
             <ul id="person-list">
                 <a href="{{ url_prefix }}/weibo?user={{screenName}}"><li>微博<span>{{ weibo_count }}</span></li></a>

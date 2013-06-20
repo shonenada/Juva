@@ -124,13 +124,13 @@ $(function(){
     });
   };
 
-  $("#focus-btn").click(function(){
-    var user_name = $("#focus-btn").attr("href").replace("#", "");
+  $(".focus-btn").click(function(){
+    var user_name = $(this).attr("href").replace("#", "");
     focus(user_name, "show");
   });
 
-  $("#h-focus-btn").click(function(){
-    var user_name = $("#focus-btn").attr("href").replace("#", "");
+  $(".h-focus-btn").click(function(){
+    var user_name = $(this).attr("href").replace("#", "");
     focus(user_name, "hidden");
   });
 
