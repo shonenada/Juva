@@ -28,7 +28,7 @@
 
     <div id="main" class="content">
         <div id="person" class="borad">
-            <h4>{{ screenName }} {% if not_focus: %}<span class="focus-btns"><a href="#{{ screenName }}" ="focus-btn">(关注)</a>/<a href="#{{ screenName }}" id="h-focus-btn">(悄悄关注)</a></span>{% endif %}</h4>
+            <h4>{{ screenName }} {% if not_focus: %}<span class="focus-btns"><a href="#{{ screenName }}" class="focus-btn">(关注)</a>/<a href="#{{ screenName }}" class="h-focus-btn">(悄悄关注)</a></span>{% endif %}</h4>
             <div class="line"></div>
             <ul id="person-list">
                 <a href="{{ url_prefix }}/weibo?user={{screenName}}"><li>微博<span>{{ weibo_count }}</span></li></a>
