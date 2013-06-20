@@ -293,8 +293,14 @@ public class Template {
     	            String foundString =
                                matcher.group(0);
     	            String[] names = removeEtbrackets(foundString).split("\\.");
-    	            String varName = names[1];
-    	            String replacement = rs.getString(varName);
+    	            String replacement = "";
+    	            if (names.length > 1){
+    	            	String varName = names[1];
+            	        replacement = rs.getString(varName);
+        	        }
+        	        else{
+        	        	replacement = this.parseVar(foundString);
+        	        }
     	            temp = Utils.replaceAll(temp, foundString, replacement);
     	        }
     		}

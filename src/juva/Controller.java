@@ -83,7 +83,7 @@ public class Controller extends HttpServlet {
 	public void HandlerServerErrorException(Throwable e) throws IOException {
 		// TODO log this message.
 		response.sendError(500);
-		e.printStackTrace(out);
+		e.printStackTrace();
 	}
 
 	public void destroy() {

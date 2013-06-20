@@ -75,6 +75,10 @@ public class ModelProxy {
 	public void setDesc(){
 		this.isDesc = true;
 	}
+	
+	public void setAsc(){
+		this.isDesc = false;
+	}
 
 	public boolean isRecordExist() throws SQLException{
 		String table = this.model.getTable();
