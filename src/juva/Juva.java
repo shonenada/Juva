@@ -43,7 +43,8 @@ public class Juva extends HttpServlet {
 		this.PROJECT_NAME = project;
 	}
 	
-	public void doGet(HttpServletRequest request, HttpServletResponse response)
+	public void doGet(HttpServletRequest request,
+			           HttpServletResponse response)
 			throws ServletException, IOException {
 		
 		initPrinter(response);
@@ -51,6 +52,7 @@ public class Juva extends HttpServlet {
 		Controller controller = makeController(uri);
 
 		if (controller != null){
+			controller.setSession(request.getSession());
 			controller.doGet(request, response);
 		}else{
 			response.sendError(404, "Page Not Found!");
@@ -58,7 +60,8 @@ public class Juva extends HttpServlet {
 		
 	}
 
-	public void doPost(HttpServletRequest request, HttpServletResponse response)
+	public void doPost(HttpServletRequest request,
+			            HttpServletResponse response)
 			throws ServletException, IOException {
 
 		initPrinter(response);
@@ -66,6 +69,7 @@ public class Juva extends HttpServlet {
 		Controller controller = makeController(uri);
 		
 		if (controller != null){
+			controller.setSession(request.getSession());
 			controller.doPost(request, response);
 		}else{
 			response.sendError(404, "Page Not Found!");
@@ -73,7 +77,8 @@ public class Juva extends HttpServlet {
 		
 	}
 
-	public void doDelete(HttpServletRequest request, HttpServletResponse response)
+	public void doDelete(HttpServletRequest request,
+			              HttpServletResponse response)
 			throws ServletException, IOException {
 		
 		initPrinter(response);
@@ -81,6 +86,7 @@ public class Juva extends HttpServlet {
 		Controller controller = makeController(uri);
 		
 		if (controller != null){
+			controller.setSession(request.getSession());
 			controller.doDelete(request, response);
 		}else{
 			response.sendError(404, "Page Not Found!");
@@ -88,7 +94,8 @@ public class Juva extends HttpServlet {
 		
 	}
 
-	public void doPut(HttpServletRequest request, HttpServletResponse response)
+	public void doPut(HttpServletRequest request,
+			           HttpServletResponse response)
 			throws ServletException, IOException {
 		
 		initPrinter(response);
@@ -96,6 +103,7 @@ public class Juva extends HttpServlet {
 		Controller controller = makeController(uri);
 		
 		if (controller != null){
+			controller.setSession(request.getSession());
 			controller.doPut(request, response);
 		}else{
 			response.sendError(404, "Page Not Found!");
@@ -136,7 +144,8 @@ public class Juva extends HttpServlet {
 	
 	public void scanInit(){
 		scanner = new ClassScanner(this);
-		String controllerPath = "/WEB-INF/classes/" + this.PROJECT_NAME + "/controller";
+		String controllerPath = "/WEB-INF/classes/" +
+                                this.PROJECT_NAME + "/controller";
 		ServletContext context = this.getServletContext();
 		String controllerRealPath = context.getRealPath(controllerPath);
 		File controllerClassFiles = new File(controllerRealPath);

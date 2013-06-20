@@ -27,7 +27,7 @@ public class Captcha extends HttpServlet{
 	
 	public static String getRandomString() {
 	    StringBuffer buffer = new StringBuffer();
-	    for (int i = 0; i < 9; i++) {
+	    for (int i = 0; i < 4; i++) {
 	        buffer.append(CHARS[random.nextInt(CHARS.length)]);
 	    }
 	    return buffer.toString();
@@ -48,8 +48,8 @@ public class Captcha extends HttpServlet{
 	            throws IOException{
 		response.setHeader("Cache-Control","no-cache");
 		response.setContentType("image/jpeg");
-	    String radomString = getRandomString();
-	    request.getSession(true).setAttribute("radomString", radomString);
+	    String randomString = getRandomString();
+	    request.getSession(true).setAttribute("randomString", randomString);
 	    Color color = getRandomColor();
 	    Color reverse = getReverseColor(color);
 	    BufferedImage bi = new BufferedImage(100, 30,
@@ -59,7 +59,7 @@ public class Captcha extends HttpServlet{
 	    g.setColor(color);
 	    g.fillRect(0,0,100,30);
 	    g.setColor(reverse);
-	    g.drawString(radomString,18,20);
+	    g.drawString(randomString,18,20);
 	    for (int i = 0,n = random.nextInt(100); i<n; i++) {
 	        g.drawRect(random.nextInt(100), random.nextInt(30), 1, 1);
 	    }

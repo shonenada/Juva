@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Juva</title>
+    <script type="text/javascript" src="{{ url_prefix }}/static/scripts/component/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="{{ url_prefix }}/static/scripts/component/jquery.form.js"></script>
+    <script type="text/javascript" src="{{ url_prefix }}/static/scripts/global.js"></script>
+    <link rel="stylesheet" href="{{ url_prefix }}/static/styles/base.css" type="text/css">
+    <link rel="stylesheet" href="{{ url_prefix }}/static/styles/messagebox.css" type="text/css">
+
+    <link rel="stylesheet" type="text/css" href="{{ url_prefix }}/static/styles/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_prefix }}/static/styles/main.css">
+</head>
+
+<body>
+    <div id="header">
+        <div class="content">
+            <ul>
+                <li><a href="{{ url_prefix }}/main">主页</a></li>
+                <li{% if focus: %} class="current"{%endif%}><a href="{{ url_prefix }}/focus">我的关注</a></li>
+                <li{% if fans: %} class="current"{%endif%}><a href="{{ url_prefix }}/fans">我的粉丝</a></li>
+                <li><a href="{{ url_prefix }}/users">最近加入</a></li>
+            </ul>
+            <span class="right">欢迎您，{{ nickname }}。<a href="{{ url_prefix}}/logout">注销</a></span>
+        </div>
+    </div>
+
+    <div id="main" class="content">
+        <div id="person" class="borad">
+            <h4>{{ screenName }} {% if not_focus: %}<span class="focus-btns"><a href="#{{ screenName }}" class="focus-btn">(关注)</a>/<a href="#{{ screenName }}" class="h-focus-btn">(悄悄关注)</a></span>{% endif %}</h4>
+            <div class="line"></div>
+            <ul id="person-list">
+                <a href="{{ url_prefix }}/weibo?user={{screenName}}"><li>微博<span>{{ weibo_count }}</span></li></a>
+                <a href="{{ url_prefix }}/focus?user={{screenName}}"><li>关注<span>{{ focus_count }}</span></li></a>
+                <a href="{{ url_prefix }}/fans?user={{screenName}}"><li>粉丝<span>{{ fans_count }}</span></li></a>
+            </ul>
+        </div>
+        <div id="weibo" class="borad">
+            {% if focus: %}
+            <h4>{{ screenName }}的关注</h4>
+            {% endif %}
+            {% if fans: %}
+            <h4>{{ screenName }}的粉丝</h4>
+            {% endif %}            
+            <div class="line"></div>
+            <ol>
+                {%for focus in focusList: %}
+                <li><a href="{{url_prefix}}/weibo?user={{focus.1}}">{{focus.1}}</a></li>
+                {%endfor%}
+            </ol>
+        </div>
+    </div>
+
+    <div id="footer">
+
+    </div>
+</body>
+</html>

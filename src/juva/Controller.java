@@ -12,13 +12,21 @@ import java.util.Set;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import juva.Exceptions.TemplateNoVariableKey;
+import juva.Exceptions.AuthenticateFailedException;
 import juva.database.Model;
+import juva.database.ModelProxy;
+import juva.rbac.PermissionTable;
+import juva.rbac.Resource;
+import juva.rbac.Role;
+import juva.rbac.Roles;
+import juva.rbac.PermissionTable.METHODS;
+
 
 public class Controller extends HttpServlet {
 
@@ -31,28 +39,62 @@ public class Controller extends HttpServlet {
 	protected ServletContext context;
 	protected String rootPath;
 	protected HttpSession session;
-	protected Map<String, Object> variables = new HashMap<String, Object>(); 
+	protected Map<String, Object> variables = new HashMap<String, Object>();
+	protected juva.rbac.User currentUser;
 
-	public Controller() {
+	protected PermissionTable permissionTable;
+	
+	protected ArrayList<ModelProxy> modelRegister;
+	
+	
+	public Controller() throws Throwable {
 		super();
+		String thisName = this.getClass().getName();
+		permissionTable = new PermissionTable(new Resource(thisName));
+		initPermission();
 	}
 	
-	public Controller(String urlPattern) {
-		super();
+	public Controller(String urlPattern) throws Throwable {
+		this();
 		this.addUrlPattern(urlPattern);
 		variables.clear();
 	}
 	
-	public Controller(String[] urlPatterns) {
-		super();
+	public Controller(String[] urlPatterns) throws Throwable {
+		this();
 		for(int i=0;i<urlPatterns.length; ++i){
 			this.addUrlPattern(urlPatterns[i]);
 		}
 		variables.clear();
 	}
 
+	protected void initPermission() throws Throwable{
+		this.permissionTable.allow(Roles.Everyone, METHODS.GET);
+	}
+	
+	public void before() throws Throwable{}
+	
+	public void after() throws Throwable{}
+	
+	public void HandleAuthenticateFailedException() throws IOException{
+		response.sendError(405, "Method Not Allow");
+	}
+	
+	public void HandlerServerErrorException(Throwable e) throws IOException {
+		// TODO log this message.
+		response.sendError(500);
+		e.printStackTrace();
+	}
+
 	public void destroy() {
 		super.destroy();
+		for (int i=0;i<modelRegister.size();++i){
+			try {
+				modelRegister.get(i).db.closeConnection();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public void setContext(ServletContext context){
@@ -63,7 +105,11 @@ public class Controller extends HttpServlet {
 		this.rootPath = path;
 	}
 	
-	public ArrayList getUrlPatterns(){
+	public void setSession(HttpSession session){
+		this.session = session;
+	}
+	
+	public ArrayList<String> getUrlPatterns(){
 		return this._urlPatterns;
 	}
 	
@@ -103,68 +149,122 @@ public class Controller extends HttpServlet {
 	public void doGet(HttpServletRequest request,
 			           HttpServletResponse response)
 			throws ServletException, IOException {
-		initActinon(request, response);
 		try {
+			initActinon(request, response);
+			this.before();
+			this.authenticate(PermissionTable.METHODS.GET);
 			this.get();
-		} catch (Throwable e) {
-			// TODO log this message.
-			response.sendError(500);
-			e.printStackTrace();
+			this.after();
 		}
+		catch (AuthenticateFailedException e) {
+			HandleAuthenticateFailedException();
+		}
+		catch (Throwable e) {
+			HandlerServerErrorException(e);
+		}
+		
 	}
 
 	public void doPost(HttpServletRequest request,
 			            HttpServletResponse response)
 			throws ServletException, IOException {
-		initActinon(request, response);
 		try {
+			initActinon(request, response);
+			this.before();
+			this.authenticate(PermissionTable.METHODS.POST);
 			this.post();
+			this.after();
+		}
+		catch (AuthenticateFailedException e) {
+			HandleAuthenticateFailedException();
 		} catch (Throwable e) {
-			// TODO log this message.
-			response.sendError(500);
-			e.printStackTrace();
+			HandlerServerErrorException(e);
 		}
 	}
 
 	public void doPut(HttpServletRequest request,
 			           HttpServletResponse response)
 			throws ServletException, IOException {
-		initActinon(request, response);
 		try {
+			initActinon(request, response);
+			this.before();
+			this.authenticate(PermissionTable.METHODS.PUT);
 			this.put();
+			this.after();
+		}
+		catch (AuthenticateFailedException e) {
+			HandleAuthenticateFailedException();
 		} catch (Throwable e) {
-			// TODO log this message.
-			response.sendError(500);
-			e.printStackTrace();
+			HandlerServerErrorException(e);
 		}
 	}
 
 	public void doDelete(HttpServletRequest request,
 			              HttpServletResponse response)
 			throws ServletException, IOException {
-		initActinon(request, response);
 		try {
+			initActinon(request, response);
+			this.before();
+			this.authenticate(PermissionTable.METHODS.DELETE);
 			this.delete();
+			this.after();
+		}
+		catch (AuthenticateFailedException e) {
+			HandleAuthenticateFailedException();
 		} catch (Throwable e) {
-			// TODO log this message.
-			response.sendError(500);
-			e.printStackTrace();
+			HandlerServerErrorException(e);
 		}
 	}
-	
+
 	public void initActinon(HttpServletRequest request,
 			                 HttpServletResponse response)
-            throws IOException{
+            throws Throwable{
 		this.request = request;
 		this.response = response;
 		this.response.setContentType("text/html;charset=utf-8");
 		this.setContext(context);
-		session = request.getSession(true);
 		this.out = this.response.getWriter();
 		Utils.Json.registerPrinter(out);
 	}
 
+	public void authenticate(PermissionTable.METHODS method)
+	        throws IOException, AuthenticateFailedException{
+		Role currentRole;
+		if (this.currentUser == null){
+			currentRole = Roles.Everyone;
+		}else{
+			currentRole = this.currentUser.getRole();
+		}
+		boolean allow = this.permissionTable.accessiable(currentRole, method);
+		if (!allow){
+			throw new AuthenticateFailedException();
+		}
+	}
+	
+	public Object getCookies(String cookiesName){
+		return getCookies(cookiesName, this.request);
+	}
+
+	public static Object getCookies(String cookiesName,
+			                          HttpServletRequest request){
+		Object object = null;
+		Cookie[] cookies = request.getCookies();
+	    if (cookies != null){
+	        for(int i=0;i <cookies.length; ++i){
+	            if (cookies[i].getName().equals(cookiesName)){
+	            	object = cookies[i].getValue();
+	            }
+	        }
+	    }
+	    return object;
+	}
+	
 	protected void putVar(String key, Object value){
+		if (value instanceof Integer ||
+            value instanceof Double ||
+            value instanceof Float){
+			value = value + "";
+		}
 		variables.put(key, value);
 	}
 	

@@ -1,0 +1,164 @@
+body{
+    background: url(../images/bg.jpg);
+}
+
+#header{
+    position: fixed;
+    top: 0px;
+    width: 100%;
+    height: 40px;
+    z-index: 5555;
+    background: url(../images/sprite_bg.jpg);
+    color: #fff;
+    line-height: 40px;
+}
+
+#header ul{
+    display: inline;
+    margin-left: 0px;
+}
+
+#header li{
+    line-height: 40px;
+    display: inline-block;
+    width: 100px;
+    text-align: center;
+    color: #666;
+}
+
+#header li.current{
+    color: #fff;
+    box-shadow: inset 0 5px 10px rgba(0,0,0,.5);
+}
+
+#header a{
+    color: #fff;
+    font-weight: bold;
+}
+
+#main{
+    background: rgba(255, 255, 255, 0.3);
+    padding: 10px;
+    padding-top: 60px;
+}
+
+#person{
+    width: 275px;
+    float: left;
+}
+
+#person h4{
+    text-indent: 1em;
+}
+
+#weibo{
+    margin-left: 20px;
+    width: 580px;
+    display: inline-block;
+}
+
+#weibo-box{
+    width: 100%;
+}
+
+#weibo-box textarea{
+    width: 565px;
+    height: 80px;
+}
+
+#weibo-box {
+    text-align: right;
+}
+
+#person-list li{
+    display: inline-block;
+    width: 30%;
+    margin-top: 5px;
+    text-align: center;
+}
+
+#person-list span{
+    display: block;
+    text-align: center;
+    font-weight: bold;
+}
+
+.content{
+    width: 900px;
+    margin: 0 auto;
+}
+
+.right{
+    float: right;
+}
+
+.borad{
+    background: #fafafa;
+    border-radius: 5px;
+    border: 1px solid #aaa;
+    box-shadow: 1px 1px 0px 0px #bbb;
+    padding: 5px;
+}
+
+.line{
+    width: 100%;
+    height: 1px;
+    background: #aaa;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.weibo-content{
+    text-indent: 1em;
+}
+.weibo-content p{
+    margin: 0px 0px 0px;
+}
+.weibo-repost{
+    margin: 0px 0px 0px;
+    text-align: right;
+}
+
+.focus-btns{
+    font-size: 12px;
+}
+
+.weibo-comment-framework{
+    border: #aaa 1px solid;
+    margin: 0px 0px 10px;
+    display: none;
+    padding: 10px;
+}
+
+.comment-form{
+    margin: 0 0 0;
+}
+
+.comment-form textarea{
+    width: 400px;
+}
+
+.repost-framework{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin-left: -100px;
+    margin-top: -90px;
+    border: 1px solid #aaa;
+    min-height: 180px;
+    width: 300px;
+    background: #fff;
+    display: none;
+    padding: 10px;
+    overflow: auto;
+}
+
+.repost-form textarea{
+    width: 270px;
+    height: 90px;
+}
+
+.repost-weibo{
+    border: 1px solid #0f0f0f;
+    padding:3px;
+}

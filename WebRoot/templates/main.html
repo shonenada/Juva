@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Juva</title>
+    <script type="text/javascript" src="{{ url_prefix }}/static/scripts/component/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="{{ url_prefix }}/static/scripts/component/jquery.form.js"></script>
+    <script type="text/javascript" src="{{ url_prefix }}/static/scripts/global.js"></script>
+    <link rel="stylesheet" href="{{ url_prefix }}/static/styles/base.css" type="text/css">
+    <link rel="stylesheet" href="{{ url_prefix }}/static/styles/messagebox.css" type="text/css">
+
+    <link rel="stylesheet" type="text/css" href="{{ url_prefix }}/static/styles/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_prefix }}/static/styles/main.css">
+    <script type="text/javascript" src="{{ url_prefix }}/static/scripts/main.js"></script>
+</head>
+
+<body>
+    <div id="header">
+        <div class="content">
+            <ul>
+                <li class="current"><a href="{{ url_prefix }}/main">主页</a></li>
+                <li><a href="{{ url_prefix }}/focus">我的关注</a></li>
+                <li><a href="{{ url_prefix }}/fans">我的粉丝</a></li>
+                <li><a href="{{ url_prefix }}/users">最近加入</a></li>
+            </ul>
+            <span class="right">欢迎您，{{ nickname }}。<a href="{{ url_prefix}}/logout">注销</a></span>
+        </div>
+    </div>
+
+    <div id="main" class="content">
+        <div id="person" class="borad">
+            <h4>{{ screenName }} {% if not_focus: %}<span class="focus-btns"><a href="#{{ screenName }}" ="focus-btn">(关注)</a>/<a href="#{{ screenName }}" id="h-focus-btn">(悄悄关注)</a></span>{% endif %}</h4>
+            <div class="line"></div>
+            <ul id="person-list">
+                <a href="{{ url_prefix }}/weibo?user={{screenName}}"><li>微博<span>{{ weibo_count }}</span></li></a>
+                <a href="{{ url_prefix }}/focus?user={{screenName}}"><li>关注<span>{{ focus_count }}</span></li></a>
+                <a href="{{ url_prefix }}/fans?user={{screenName}}"><li>粉丝<span>{{ fans_count }}</span></li></a>
+            </ul>
+        </div>
+        <div id="weibo" class="borad">
+            {% if is_current_user: %}
+            <div id="weibo-box">
+                <h4>发布微博</h4>
+                <form action="{{ url_prefix }}/weibo" method="post" id="weibo-form">
+                    <textarea name="weibo"></textarea>
+                    <input type="submit" class="btn btn-danger"/>
+                </form>
+            </div>
+            <h4>新微博</h4>
+            {% endif %}
+            {% if not_current_user: %}
+            <h4>{{ screenName }}的微博</h4>
+            {% endif %}
+            <div class="line"></div>
+            {% if has_weibo: %}
+                {%for weibo in weibos: %}
+                <div id="weibo-{{weibo.0}}">
+                    <a href="{{ url_prefix }}/weibo?user={{weibo.1}}">{{ weibo.1 }}</a> 在 {{ weibo.2 }} 说：<br />
+                    <div class="weibo-content"><p>{{ weibo.3 }}</p></div>
+                    <div class="weibo-repost">
+                        {{weibo.6}}
+                        <a href="###" class="repost-btn" id="repost-btn-{{weibo.0}}">转发({{weibo.4}})</a>
+                        <a href="###" id="comment-btn-{{weibo.0}}" class="comment-btn">评论({{weibo.5}})</a>
+                    </div>
+                    <div class="weibo-comment-framework" id="comment-framework-{{weibo.0}}">
+                        <div class="weibo-comment-post">
+                            <form action="{{ url_prefix }}/comment" method="post" class="comment-form" id="comment-form-{{ weibo.0 }}">
+                                <textarea name="comment" class=""></textarea>
+                                <input type="hidden" value="{{weibo.0}}" name="aid" />
+                                <input type="submit" />
+                            </form>
+                        </div>
+                        <div class="weibo-comment" id="comment-{{weibo.0}}"></div>
+                    </div>
+                    <div id="repost-framework-{{weibo.0}}" class="repost-framework">
+                        <p>转发：<code>{{weibo.3}} -- {{weibo.1}}</code></p>
+                        <form id="repost-form-{{weibo.0}}" class="repost-form" method="post" action="{{url_prefix}}/repost">
+                            <input type="hidden" value="{{weibo.0}}" name="aid" />
+                            <textarea name="repost" id="repost-content-{{weibo.0}}" class="repost-content"></textarea><br />
+                            <input type="submit" value="转发" class="btn btn-danger" />
+                            <input type="button" class="repost-cancel-btn btn btn-primary" value="取消" />
+                        </form>
+                    </div>
+                </div>
+                {%endfor%}
+            {% endif %}
+        </div>
+    </div>
+
+    <div id="footer">
+
+    </div>
+</body>
+</html>
