@@ -15,6 +15,7 @@ public class Logout extends Controller{
 	
 	public void initPermission(){
 		this.permissionTable.allow(Roles.LocalUser, METHODS.GET);
+		this.permissionTable.allow(Roles.Administrator, METHODS.GET);
 	}
 	
 	public Logout() throws Throwable{

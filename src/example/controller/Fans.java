@@ -15,6 +15,7 @@ public class Fans extends Controller{
 	
 	protected void initPermission() throws Throwable{
 		this.permissionTable.allow(Roles.LocalUser, METHODS.GET);
+		this.permissionTable.allow(Roles.Administrator, METHODS.GET);
 	}
 	
 	public Fans() throws Throwable{

@@ -10,6 +10,7 @@ import juva.database.Model;
 import juva.database.ModelProxy;
 
 import example.settings;
+import example.auth.Roles;
 
 
 public class WeiboProxy extends ModelProxy{
@@ -76,6 +77,7 @@ public class WeiboProxy extends ModelProxy{
     	
 		ResultSet weiboRs = this.getAllWeiboByUid(uid);
 		User queryUser = (User) userProxy.find(uid);
+		User currentUser = (User) userProxy.find(current_id);
 		String screenName = queryUser.getValue("screen");
 	    ArrayList<ArrayList<String> > weiboList =
             new ArrayList<ArrayList<String> >();
@@ -92,7 +94,8 @@ public class WeiboProxy extends ModelProxy{
 	    	int repost_total = this.getRepostCount(wid);
 	    	int comment_total = commentProxy.getCount(wid);
 	    	
-	    	if (uid.equals(current_id)){
+	    	if (uid.equals(current_id) ||
+                currentUser.getRole() == Roles.Administrator){
 	    		del_html = "<a href='###' id='del-btn-" + aid +
 	    		           "' class='del-btn'>删除</a>";
 	    	}
@@ -123,6 +126,8 @@ public class WeiboProxy extends ModelProxy{
 		commentProxy.setDatabase(this.db);
 		focusProxy.setDatabase(this.db);
 
+		User currentUser = (User) userProxy.find(uid);
+		
 		ResultSet allFocus = focusProxy.getFocusByUid(uid, hidden);
 		
 		int focusCount = focusProxy.getFocusCount(uid, hidden);
@@ -150,7 +155,8 @@ public class WeiboProxy extends ModelProxy{
 		    	
 		    	// not elegant!
 		    	String del_html = "";
-		    	if (rs.getString("uid").equals(uid)){
+		    	if (rs.getString("uid").equals(uid) ||
+		    		currentUser.getRole() == Roles.Administrator){
 		    		del_html = "<a href='###' id='del-btn-" + aid +
  		                       "' class='del-btn'>删除</a>";
 		    	}

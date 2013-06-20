@@ -20,6 +20,9 @@ public class Comment extends Controller{
 		this.permissionTable.allow(Roles.LocalUser, METHODS.GET);
 		this.permissionTable.allow(Roles.LocalUser, METHODS.POST);
 		this.permissionTable.allow(Roles.LocalUser, METHODS.DELETE);
+		this.permissionTable.allow(Roles.Administrator, METHODS.GET);
+		this.permissionTable.allow(Roles.Administrator, METHODS.POST);
+		this.permissionTable.allow(Roles.Administrator, METHODS.DELETE);
 	}
 	
 	public Comment() throws Throwable{

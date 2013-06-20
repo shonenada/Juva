@@ -2,6 +2,7 @@ package example.model;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -77,6 +78,41 @@ public class UserProxy extends ModelProxy {
 		}else{
 			return false;
 		}
+	}
+	
+	public ResultSet getUserSet(String uid) throws SQLException{
+		this.clearSelectFilter();
+		this.addSelectFilter("is_trash", "0");
+		this.addSelectFilter("id", uid, "<>");
+		this.setDesc();
+		ResultSet rs = this.select();
+		this.setAsc();
+		return rs;
+	}
+	
+	public ArrayList getUserList(String uid)
+	        throws Throwable {
+		ArrayList users = new ArrayList();
+		FocusProxy focusProxy = new FocusProxy();
+		focusProxy.setDatabase(this.db);
+		ResultSet rs = this.getUserSet(uid);
+		while (rs.next()){
+			ArrayList row = new ArrayList();
+			String this_id = rs.getString("id");
+			Focus focus_rs = focusProxy.getByIDs(uid, this_id);
+			String screen = rs.getString("screen");
+			String focusHtml = "";
+			if (focus_rs == null){
+				focusHtml = "<span class='focus-btns'><a href='#" + screen + 
+				            "' class='focus-btn'>(关注)</a>/<a href='#" +
+				            screen + "' class='h-focus-btn'>" +
+				            "(悄悄关注)</a></span>";
+			}
+			row.add(screen);
+			row.add(focusHtml);
+			users.add(row);
+		}
+		return users;
 	}
 
 	public boolean isEmailExist(String email)

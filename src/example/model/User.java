@@ -53,6 +53,8 @@ public class User extends Model implements juva.rbac.User{
 			role = Roles.Everyone;
 		if ( identity != null && !identity.equals("5"))
 			role = Roles.LocalUser;
+		if ( identity != null && identity.equals("5"))
+			role = Roles.Administrator;
 		return role;
 	}
 }
