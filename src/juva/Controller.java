@@ -79,6 +79,12 @@ public class Controller extends HttpServlet {
 	public void HandleAuthenticateFailedException() throws IOException{
 		response.sendError(405, "Method Not Allow");
 	}
+	
+	public void HandlerServerErrorException(Throwable e) throws IOException {
+		// TODO log this message.
+		response.sendError(500);
+		e.printStackTrace(out);
+	}
 
 	public void destroy() {
 		super.destroy();
@@ -154,9 +160,7 @@ public class Controller extends HttpServlet {
 			HandleAuthenticateFailedException();
 		}
 		catch (Throwable e) {
-			// TODO log this message.
-			response.sendError(500);
-			e.printStackTrace();
+			HandlerServerErrorException(e);
 		}
 		
 	}
@@ -174,9 +178,7 @@ public class Controller extends HttpServlet {
 		catch (AuthenticateFailedException e) {
 			HandleAuthenticateFailedException();
 		} catch (Throwable e) {
-			// TODO log this message.
-			response.sendError(500);
-			e.printStackTrace();
+			HandlerServerErrorException(e);
 		}
 	}
 
@@ -193,9 +195,7 @@ public class Controller extends HttpServlet {
 		catch (AuthenticateFailedException e) {
 			HandleAuthenticateFailedException();
 		} catch (Throwable e) {
-			// TODO log this message.
-			response.sendError(500);
-			e.printStackTrace();
+			HandlerServerErrorException(e);
 		}
 	}
 
@@ -212,9 +212,7 @@ public class Controller extends HttpServlet {
 		catch (AuthenticateFailedException e) {
 			HandleAuthenticateFailedException();
 		} catch (Throwable e) {
-			// TODO log this message.
-			response.sendError(500);
-			e.printStackTrace();
+			HandlerServerErrorException(e);
 		}
 	}
 
