@@ -20,10 +20,12 @@ import javax.servlet.http.HttpSession;
 
 import juva.Exceptions.AuthenticateFailedException;
 import juva.database.Model;
+import juva.database.ModelProxy;
 import juva.rbac.PermissionTable;
 import juva.rbac.Resource;
 import juva.rbac.Role;
 import juva.rbac.Roles;
+import juva.rbac.PermissionTable.METHODS;
 
 
 public class Controller extends HttpServlet {
@@ -40,32 +42,59 @@ public class Controller extends HttpServlet {
 	protected Map<String, Object> variables = new HashMap<String, Object>();
 	protected juva.rbac.User currentUser;
 
-	protected PermissionTable permissionTable; 
+	protected PermissionTable permissionTable;
 	
-	public Controller() {
+	protected ArrayList<ModelProxy> modelRegister;
+	
+	
+	public Controller() throws Throwable {
 		super();
 		String thisName = this.getClass().getName();
 		permissionTable = new PermissionTable(new Resource(thisName));
+		initPermission();
 	}
 	
-	public Controller(String urlPattern) {
+	public Controller(String urlPattern) throws Throwable {
 		this();
 		this.addUrlPattern(urlPattern);
 		variables.clear();
 	}
 	
-	public Controller(String[] urlPatterns) {
+	public Controller(String[] urlPatterns) throws Throwable {
 		this();
 		for(int i=0;i<urlPatterns.length; ++i){
 			this.addUrlPattern(urlPatterns[i]);
 		}
 		variables.clear();
 	}
+
+	protected void initPermission() throws Throwable{
+		this.permissionTable.allow(Roles.Everyone, METHODS.GET);
+	}
 	
 	public void before() throws Throwable{}
+	
+	public void after() throws Throwable{}
+	
+	public void HandleAuthenticateFailedException() throws IOException{
+		response.sendError(405, "Method Not Allow");
+	}
+	
+	public void HandlerServerErrorException(Throwable e) throws IOException {
+		// TODO log this message.
+		response.sendError(500);
+		e.printStackTrace();
+	}
 
 	public void destroy() {
 		super.destroy();
+		for (int i=0;i<modelRegister.size();++i){
+			try {
+				modelRegister.get(i).db.closeConnection();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public void setContext(ServletContext context){
@@ -122,17 +151,16 @@ public class Controller extends HttpServlet {
 			throws ServletException, IOException {
 		try {
 			initActinon(request, response);
-			this.authenticate(PermissionTable.METHODS.GET);
 			this.before();
+			this.authenticate(PermissionTable.METHODS.GET);
 			this.get();
+			this.after();
 		}
 		catch (AuthenticateFailedException e) {
-			response.sendError(405, "Method Not Allow");
+			HandleAuthenticateFailedException();
 		}
 		catch (Throwable e) {
-			// TODO log this message.
-			response.sendError(500);
-			e.printStackTrace();
+			HandlerServerErrorException(e);
 		}
 		
 	}
@@ -142,16 +170,15 @@ public class Controller extends HttpServlet {
 			throws ServletException, IOException {
 		try {
 			initActinon(request, response);
-			this.authenticate(PermissionTable.METHODS.POST);
 			this.before();
+			this.authenticate(PermissionTable.METHODS.POST);
 			this.post();
+			this.after();
 		}
 		catch (AuthenticateFailedException e) {
-			response.sendError(405, "Method Not Allow");
+			HandleAuthenticateFailedException();
 		} catch (Throwable e) {
-			// TODO log this message.
-			response.sendError(500);
-			e.printStackTrace();
+			HandlerServerErrorException(e);
 		}
 	}
 
@@ -160,16 +187,15 @@ public class Controller extends HttpServlet {
 			throws ServletException, IOException {
 		try {
 			initActinon(request, response);
-			this.authenticate(PermissionTable.METHODS.PUT);
 			this.before();
+			this.authenticate(PermissionTable.METHODS.PUT);
 			this.put();
+			this.after();
 		}
 		catch (AuthenticateFailedException e) {
-			response.sendError(405, "Method Not Allow");
+			HandleAuthenticateFailedException();
 		} catch (Throwable e) {
-			// TODO log this message.
-			response.sendError(500);
-			e.printStackTrace();
+			HandlerServerErrorException(e);
 		}
 	}
 
@@ -178,16 +204,15 @@ public class Controller extends HttpServlet {
 			throws ServletException, IOException {
 		try {
 			initActinon(request, response);
-			this.authenticate(PermissionTable.METHODS.DELETE);
 			this.before();
+			this.authenticate(PermissionTable.METHODS.DELETE);
 			this.delete();
+			this.after();
 		}
 		catch (AuthenticateFailedException e) {
-			response.sendError(405, "Method Not Allow");
+			HandleAuthenticateFailedException();
 		} catch (Throwable e) {
-			// TODO log this message.
-			response.sendError(500);
-			e.printStackTrace();
+			HandlerServerErrorException(e);
 		}
 	}
 
@@ -205,18 +230,15 @@ public class Controller extends HttpServlet {
 	public void authenticate(PermissionTable.METHODS method)
 	        throws IOException, AuthenticateFailedException{
 		Role currentRole;
-		
 		if (this.currentUser == null){
 			currentRole = Roles.Everyone;
 		}else{
 			currentRole = this.currentUser.getRole();
 		}
-		
 		boolean allow = this.permissionTable.accessiable(currentRole, method);
 		if (!allow){
 			throw new AuthenticateFailedException();
 		}
-		
 	}
 	
 	public Object getCookies(String cookiesName){
@@ -238,6 +260,11 @@ public class Controller extends HttpServlet {
 	}
 	
 	protected void putVar(String key, Object value){
+		if (value instanceof Integer ||
+            value instanceof Double ||
+            value instanceof Float){
+			value = value + "";
+		}
 		variables.put(key, value);
 	}
 	

@@ -1,0 +1,76 @@
+body{
+    width: 100%;
+    height: 754px;
+    color: #fff;
+    background: url(../images/index-bg.jpg) center center;
+    background-size: cover;
+    filter: progid: DXImageTransform.Microsoft.AlphaImageLoader(src='../images/index-bg.jpg', sizingMethod='scale');
+    font-family: Tahoma, Arial, Microsoft Yahei, Georgia, serif;
+    overflow: hidden;
+}
+
+#banner{
+    position: absolute;
+    top: 35%;
+    left: 15%;
+    width: 400px;
+    height: 100px;
+    font-size: 20px;
+    text-shadow: 2px 2px #000000;
+    letter-spacing: 4px;
+}
+
+#banner p{
+    text-indent: 2em;
+}
+
+.banner-font{
+    font-size: 25px;
+}
+
+#info{
+    position: absolute;
+    width: 400px;
+    top: 25%;
+    right: 15%;
+}
+
+#login, #register{
+    text-align: right;
+}
+
+#login label, #register label{
+    cursor: default;
+    display: inline-block;
+    text-align: right;
+    font-size: 16px;
+}
+
+#footer{
+    position: absolute;
+    bottom: 20%;
+    left: 45%;
+    color: #aaa;
+    font-size: 14px;
+    text-shadow: 1px 1px #000000;
+}
+
+#footer a{
+    color: #aaa;
+}
+
+#footer a:hover{
+    color:#efefef;
+    text-decoration: none;
+}
+
+.fix-small-btn{
+    width: 100px;
+    height: 30px;
+    line-height: 30px;
+    font-size: 13px;
+}
+
+#register{
+    display: none;
+}

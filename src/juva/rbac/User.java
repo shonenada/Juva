@@ -8,6 +8,4 @@ public interface User {
 	
 	public Role getRole();
 	
-	public User getCurrentUser(HttpServletRequest request) throws Throwable;
-	
 }
