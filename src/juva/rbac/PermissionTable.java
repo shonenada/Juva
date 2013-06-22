@@ -6,6 +6,7 @@ import java.util.Map;
 
 import juva.rbac.roles.Everyone;
 
+
 public class PermissionTable {
     
     public enum METHODS{ GET, POST, PUT, DELETE }

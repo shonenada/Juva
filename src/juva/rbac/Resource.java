@@ -1,9 +1,5 @@
 package juva.rbac;
 
-import java.util.ArrayList;
-
-import juva.Controller;
-
 
 public class Resource {
 
