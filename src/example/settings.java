@@ -16,8 +16,8 @@ public class settings {
 				put("host", "localhost");
 				put("port", "3306");
 				put("name", "S2011150337");
-				put("user", "S2011150337");
-				put("passwd", "liuyaodas");
+				put("user", "root");
+				put("passwd", "");
 			}
 		};
 	
